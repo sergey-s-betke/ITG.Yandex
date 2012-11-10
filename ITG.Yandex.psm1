@@ -320,14 +320,31 @@ $($Params.$param)
 			Write-Debug "Ответ API $method: $($resString).";
 			$res = [xml] $resString;
 		
-			$_ = $res;
-			if ( & $IsSuccessPredicate ) {
+			if ( (
+				Invoke-Command `
+					-ScriptBlock { $input | % -Process $IsSuccessPredicate } `
+					-InputObject $res `
+					-ErrorAction Continue `
+			) ) {
 				Write-Verbose $SuccessMsg;
-				& $ResultFilter;
-			} elseif ( & $IsFailurePredicate ) {
+				Invoke-Command `
+					-ScriptBlock { $input | % -Process $ResultFilter } `
+					-InputObject $res `
+				;
+			} elseif ( (
+				Invoke-Command `
+					-ScriptBlock { $input | % -Process $IsFailurePredicate } `
+					-InputObject $res `
+					-ErrorAction Continue `
+			) ) {
 				Write-Verbose "Ответ API $method: $($resString).";
+				$ErrorMsg = Invoke-Command `
+					-ScriptBlock { $input | % -Process $FailureMsgFilter } `
+					-InputObject $res `
+					-ErrorAction SilentlyContinue `
+				;
 				Write-Error `
-					-Message "$FailureMsg - ($( & $FailureMsgFilter ))" `
+					-Message "$FailureMsg - ($ErrorMsg)" `
 					-Category CloseError `
 					-CategoryActivity 'Yandex.API' `
 					-RecommendedAction 'Проверьте правильность указания домена и Ваши права на домен.' `
@@ -354,6 +371,6 @@ $($Params.$param)
 
 Export-ModuleMember `
 	Get-Token `
-    , Get-CachedToken `
+	, Get-CachedToken `
 	, Invoke-API `
 ;
