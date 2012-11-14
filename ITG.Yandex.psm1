@@ -10,6 +10,11 @@ Set-Variable `
 	-Value 'https://pddimp.yandex.ru' `
 ;
 
+Set-Variable `
+	-Name 'TokenForDomain' `
+	-Value (@{}) `
+;
+
 function Get-Token {
 	<#
 		.Component
@@ -17,24 +22,21 @@ function Get-Token {
 		.Synopsis
 			Метод (обёртка над Яндекс.API get_token) предназначен для получения авторизационного токена.
 		.Description
-			Метод get_token предназначен для получения авторизационного токена.
-			Авторизационный токен используется для активации API Яндекс.Почты для доменов. Получать токен
-			нужно только один раз. Чтобы получить токен, следует иметь подключенный домен, авторизоваться
-			его администратором.
-			Синтаксис запроса:
-				https://pddimp.yandex.ru/get_token.xml ? domain_name =<имя домена>
-			Получение токена для домена yourdomain.ru:
-				https://pddimp.yandex.ru/get_token.xml?domain_name=yourdomain.ru
-			Формат ответа
-			Если ошибок нет, метод возвращает <ok token="..."/>, в противном случае - <error reason='...'/>.
-			Но данная функция возвращает непосредственно токен, либо генерирует исключение.
+			Метод get_token предназначен для получения авторизационного токена. 
+			Авторизационный токен используется для активации API Яндекс.Почты для доменов. Получать токен 
+			нужно только один раз. Чтобы получить токен, следует иметь подключенный домен, авторизоваться 
+			его администратором. 
+			Синтаксис запроса: 
+				https://pddimp.yandex.ru/get_token.xml ? 
+					domain_name =<имя домена> 
+			Данная функция возвращает непосредственно токен, либо генерирует исключение.
 		.Outputs
 			[System.String] - собственно token
 		.Link
-			http://api.yandex.ru/pdd/doc/api-pdd/reference/get-token.xml#get-token
+			[API Яндекс.Почты - get_token](http://api.yandex.ru/pdd/doc/api-pdd/reference/get-token.xml#get-token)
 		.Example
-			Получение токена для домена yourdomain.ru:
 			$token = Get-Token -DomainName 'yourdomain.ru';
+			Получение токена для домена yourdomain.ru.
 	#>
 
 	[CmdletBinding()]
@@ -52,99 +54,67 @@ function Get-Token {
 		[Alias("domain_name")]
 		[Alias("Domain")]
 		$DomainName
+,
+		# данный флаг указывает на необходимость принудительного запроса токена, минуя кеш
+		[switch]
+		$NoCache
 	)
 
 	process {
-		$get_tokenURI = [System.Uri]"$APIRoot/get_token.xml?domain_name=$( [System.Uri]::EscapeDataString( $DomainName ) )";
-		$get_tokenAuthURI = [System.Uri]"https://passport.yandex.ru/passport?mode=auth&msg=pdd&retpath=$( [System.Uri]::EscapeDataString( $get_tokenURI ) )";
-
-		try {
-			Write-Verbose 'Создаём экземпляр InternetExplorer.';
-			$ie = New-Object -Comobject InternetExplorer.application;
-			Write-Verbose "Отправляем InternetExplorer на Яндекс.Паспорт ($get_tokenAuthURI).";
-			$ie.Navigate( $get_tokenAuthURI );
-			$ie.Visible = $True;
-			
-			$ie `
-			| Set-WindowZOrder -ZOrder ( [ITG.WinAPI.User32.HWND]::Top ) -PassThru `
-			| Set-WindowForeground -PassThru `
-			| Out-Null
-			;
-
-			Write-Verbose 'Ждём либо пока Яндекс.Паспорт сработает по cookies, либо пока администратор авторизуется на Яндекс.Паспорт...';
-			while ( `
-				$ie.Busy `
-				-or (-not ([System.Uri]$ie.LocationURL).IsBaseOf( $get_tokenURI ) ) `
-			) { Sleep -milliseconds 100; };
-			$ie.Visible = $False;
-
-			$res = ( [xml]$ie.document.documentElement.innerhtml );
-			Write-Debug "Ответ API get_token: $($ie.document.documentElement.innerhtml).";
-			if ( $res.ok ) {
-				$token = [System.String]$res.ok.token;
-				Write-Verbose "Получили токен для домена $($DomainName): $token.";
-				return $token;
+		if ( -not $NoCache ) {
+			if ( $TokenForDomain.ContainsKey( $DomainName ) ) {
+				return $TokenForDomain.$DomainName;
 			} else {
-				$errMsg = $res.error.reason;
-				Write-Error `
-					-Message "Ответ API get_token для домена $DomainName отрицательный." `
-					-Category PermissionDenied `
-					-CategoryReason $errMsg `
-					-CategoryActivity 'Yandex.API.get_token' `
-					-CategoryTargetName $DomainName `
-					-RecommendedAction 'Проверьте правильность указания домена и Ваши права на домен.' `
-				;
+				return $TokenForDomain.$DomainName = Get-Token -DomainName $DomainName -NoCache;
 			};
-		} finally {
-			Write-Verbose 'Уничтожаем экземпляр InternetExplorer.';
-			$ie.Quit(); 
-			$res = [System.Runtime.InteropServices.Marshal]::ReleaseComObject( $ie );
+		} else {
+			$get_tokenURI = [System.Uri]"$APIRoot/get_token.xml?domain_name=$( [System.Uri]::EscapeDataString( $DomainName ) )";
+			$get_tokenAuthURI = [System.Uri]"https://passport.yandex.ru/passport?mode=auth&msg=pdd&retpath=$( [System.Uri]::EscapeDataString( $get_tokenURI ) )";
+
+			try {
+				Write-Verbose 'Создаём экземпляр InternetExplorer.';
+				$ie = New-Object -Comobject InternetExplorer.application;
+				Write-Verbose "Отправляем InternetExplorer на Яндекс.Паспорт ($get_tokenAuthURI).";
+				$ie.Navigate( $get_tokenAuthURI );
+				$ie.Visible = $True;
+				
+				$ie `
+				| Set-WindowZOrder -ZOrder ( [ITG.WinAPI.User32.HWND]::Top ) -PassThru `
+				| Set-WindowForeground -PassThru `
+				| Out-Null
+				;
+
+				Write-Verbose 'Ждём либо пока Яндекс.Паспорт сработает по cookies, либо пока администратор авторизуется на Яндекс.Паспорт...';
+				while ( `
+					$ie.Busy `
+					-or (-not ([System.Uri]$ie.LocationURL).IsBaseOf( $get_tokenURI ) ) `
+				) { Sleep -milliseconds 100; };
+				$ie.Visible = $False;
+
+				$res = ( [xml]$ie.document.documentElement.innerhtml );
+				Write-Debug "Ответ API get_token: $($ie.document.documentElement.innerhtml).";
+				if ( $res.ok ) {
+					$token = [System.String]$res.ok.token;
+					Write-Verbose "Получили токен для домена $($DomainName): $token.";
+					return $token;
+				} else {
+					$errMsg = $res.error.reason;
+					Write-Error `
+						-Message "Ответ API get_token для домена $DomainName отрицательный." `
+						-Category PermissionDenied `
+						-CategoryReason $errMsg `
+						-CategoryActivity 'Yandex.API.get_token' `
+						-CategoryTargetName $DomainName `
+						-RecommendedAction 'Проверьте правильность указания домена и Ваши права на домен.' `
+					;
+				};
+			} finally {
+				Write-Verbose 'Уничтожаем экземпляр InternetExplorer.';
+				$ie.Quit(); 
+				$res = [System.Runtime.InteropServices.Marshal]::ReleaseComObject( $ie );
+			};
 		};
 	}
-};
-
-Set-Variable `
-	-Name 'TokenForDomain' `
-	-Value (@{}) `
-;
-
-function Get-CachedToken {
-	<#
-		.Component
-			API Яндекс
-		.Synopsis
-			Метод - проверяет действительность переданного токена (на самом деле - лишь сравнивает с пустой
-			строкой, и в случае недействительности запрашивает его через Get-Token.
-		.Description
-			Метод - проверяет действительность переданного токена (на самом деле - лишь сравнивает с пустой
-			строкой, и в случае недействительности запрашивает его через Get-Token.
-		.Outputs
-			[System.String] - собственно token
-		.Link
-			Get-Token
-		.Example
-			$token = Get-CachedToken -DomainName 'yourdomain.ru';
-	#>
-
-	[CmdletBinding()]
-	
-	param (
-		# имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
-		[Parameter(
-			Position = 0
-		)]
-		[string]
-		[ValidateScript( { $_ -match "^$($reDomain)$" } )]
-		[Alias("domain_name")]
-		[Alias("Domain")]
-		$DomainName
-	)
-
-	if ( $TokenForDomain.ContainsKey( $DomainName ) ) {
-		return $TokenForDomain.$DomainName;
-	} else {
-		return $TokenForDomain.$DomainName = Get-Token -DomainName $DomainName;
-	};
 };
 
 function Invoke-API {
@@ -152,9 +122,9 @@ function Invoke-API {
 		.Component
 			API Яндекс
 		.Synopsis
-			Обёртка для вызовов методов API Яндекс.
+			Обёртка для вызовов методов API Яндекс. Предназначена для внутреннего использования.
 		.Description
-			Обёртка для вызовов методов API Яндекс.
+			Обёртка для вызовов методов API Яндекс. Предназначена для внутреннего использования.
 		.Outputs
 			[xml] - Результат, возвращённый API.
 	#>
@@ -165,20 +135,20 @@ function Invoke-API {
 	)]
 	
 	param (
-		# HTTP метод вызова API.
+		# HTTP метод вызова API
 		[Parameter(
 			Mandatory=$false
 		)]
 		[string]
 		$HttpMethod = [System.Net.WebRequestMethods+HTTP]::Get
 	,
-		# авторизационный токен, полученный через Get-Token.
+		# авторизационный токен, полученный через Get-Token
 		[Parameter(
 		)]
 		[string]
 		$Token
 	,
-		# метод API - компонент url.
+		# метод API - компонент url
 		[Parameter(
 			Mandatory=$true
 		)]
@@ -207,29 +177,29 @@ function Invoke-API {
 		[scriptblock]
 		$IsFailurePredicate = { [bool]$_.action.status.error }
 	,
-		# фильтр обработки результата. Если фильтр не задан - функция не возвращает результат.
+		# фильтр обработки результата. Если фильтр не задан - функция не возвращает результат
 		[scriptblock]
 		$ResultFilter = {}
 	,
-		# Шаблон сообщения об успешном выполнении API.
+		# Шаблон сообщения об успешном выполнении API
 		[string]
 		$SuccessMsg = "Метод API $method успешно выполнен для домена $DomainName."
 	,
-		# Шаблон сообщения об ошибке вызова API.
+		# Шаблон сообщения об ошибке вызова API
 		[string]
 		$FailureMsg = "Ошибка при вызове метода API $method для домена $DomainName"
 	,
-		# Фильтр обработки результата для выделения сообщения об ошибке.
+		# Фильтр обработки результата для выделения сообщения об ошибке
 		[scriptblock]
 		$FailureMsgFilter = { $_.action.status.error.'#text' }
 	,
-		# Шаблон сообщения о недиагностируемой ошибке вызова API.
+		# Шаблон сообщения о недиагностируемой ошибке вызова API
 		[string]
 		$UnknownErrorMsg = "Неизвестная ошибка при вызове метода API $method для домена $DomainName."
 	)
 
 	if ( -not $Token ) {
-		$Token = Get-CachedToken $DomainName;
+		$Token = Get-Token $DomainName;
 	};
 	$Params.Add( 'token', $Token );
 	$Params.Add( 'domain', $DomainName );
@@ -376,17 +346,13 @@ function Register-Domain {
 		.Synopsis
 			Метод (обёртка над Яндекс.API reg_domain) предназначен для регистрации домена на сервисах Яндекса.
 		.Description
-			Метод регистрирует домен на сервисах Яндекса.
-			Синтаксис запроса
-				https://pddimp.yandex.ru/api/reg_domain.xml ? token =<токен> & domain =<имя домена>
-			Если домен уже подключен, то метод reg_domain не выполняет никаких действий, возвращая секретное
-			имя и секретную строку.
+			Метод регистрирует домен на сервисах Яндекса. 
+			Если домен уже подключен, то метод reg_domain не выполняет никаких действий.
 		.Link
-			http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_reg_domain.xml
+			[API Яндекс - reg_domain](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_reg_domain.xml)
 		.Example
-			Регистрация нескольких доменов:
-			$token = Get-Token -DomainName 'maindomain.ru';
-			'domain1.ru', 'domain2.ru' | Register-Domain -Token $token
+			$token = Get-Token -DomainName 'maindomain.ru';	'domain1.ru', 'domain2.ru' | Register-Domain -Token $token;
+			Регистрация нескольких доменов.
 	#>
 
 	[CmdletBinding(
@@ -407,8 +373,7 @@ function Register-Domain {
 		[Alias("Domain")]
 		$DomainName
 	,
-		# авторизационный токен, полученный через Get-Token. Если не указан, то будет использован
-		# последний полученный
+		# авторизационный токен, полученный через Get-Token, для другого, уже зарегистрированного домена
 		[Parameter(
 			Mandatory=$true
 		)]
@@ -441,16 +406,13 @@ function Remove-Domain {
 		.Synopsis
 			Метод (обёртка над Яндекс.API del_domain) предназначен для отключения домена от Яндекс.Почта для доменов.
 		.Description
-			Метод позволяет отключить домен.
-			Отключенный домен перестает выводиться в списке доменов. После отключения домен можно подключить заново.
-			Отключение домена не влечет за собой изменения MX-записей. MX-записи нужно устанавливать отдельно на
+			Метод позволяет отключить домен. 
+			Отключенный домен перестает выводиться в списке доменов. После отключения домен можно подключить заново. 
+			Отключение домена не влечет за собой изменения MX-записей. MX-записи нужно устанавливать отдельно на 
 			DNS-серверах, куда делегирован домен.
-			Синтаксис запроса
-				https://pddimp.yandex.ru/api/del_domain.xml ? token =<токен> & domain =<имя домена>
 		.Link
-			http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_domain.xml
+			[API Яндекс - del_domain](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_domain.xml)
 		.Example
-			$token = Get-Token -DomainName 'maindomain.ru';
 			Remove-Domain -DomainName 'test.ru';
 	#>
 
@@ -494,17 +456,14 @@ function Set-Logo {
 		.Synopsis
 			Метод (обёртка над Яндекс.API add_logo) предназначен для установки логотипа для домена.
 		.Description
-			Метод позволяет установить логотип домена.
-			Синтаксис запроса
-				https://pddimp.yandex.ru/api/add_logo.xml
-			Метод вызывается только как POST-запрос. Файл, содержащий логотип, и параметры передаются
-			как multipart/form-data. Поддерживаются графические файлы форматов jpg, gif, png размером
-			до 2 Мбайт. Имя файла и название параметра не важны.
+			Метод позволяет установить логотип домена. 
+			Поддерживаются графические файлы форматов jpg, gif, png размером 
+			до 2 Мбайт.
 		.Link
-			http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_logo.xml
+			[API Яндекс - add_logo](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_logo.xml)
 		.Example
-			Установка логотипа для домена yourdomain.ru:
-			Set-Logo -DomainName 'yourdomain.ru' -Token $token -Path 'c:\work\logo.png';
+			Set-Logo -DomainName 'yourdomain.ru' -Path 'c:\work\logo.png';
+			Установка логотипа для домена yourdomain.ru.
 	#>
 
 	[CmdletBinding(
@@ -514,7 +473,6 @@ function Set-Logo {
 	
 	param (
 		# имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
-		# если явно домен не указан, то будет использован последний домен, указанный при вызовах yandex.api
 		[Parameter(
 			Mandatory=$false,
 			ValueFromPipeline=$true,
@@ -526,7 +484,7 @@ function Set-Logo {
 		[Alias("Domain")]
 		$DomainName
 	,
-		# путь к файлу логотипа.
+		# путь к файлу логотипа. 
 		# Поддерживаются графические файлы форматов jpg, gif, png размером до 2 Мбайт
 		[Parameter(
 			Mandatory=$true,
@@ -565,27 +523,23 @@ function Remove-Logo {
 			Метод (обёртка над Яндекс.API del_logo) предназначен для удаления логотипа домена.
 		.Description
 			Метод позволяет удалить логотип домена.
-			Синтаксис запроса
-				https://pddimp.yandex.ru/api/del_logo.xml ? token =<токен> & domain =<имя домена>
 		.Link
-			http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_logo.xml#domain-control_del_logo
+			[API Яндекс - del_logo](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_logo.xml#domain-control_del_logo)
 		.Example
-			Удаление логотипа для домена yourdomain.ru:
 			Remove-Logo -DomainName 'yourdomain.ru';
+			Удаление логотипа для домена yourdomain.ru.
 		.Example
-			Удаление логотипа с явным указанием токена для нескольких доменов:
-			$token = Get-Token -DomainName 'maindomain.ru';
-			'domain1.ru', 'domain2.ru' | Remove-Logo -Token $token
+			'domain1.ru', 'domain2.ru' | Remove-Logo;
+			Удаление логотипа для нескольких доменов.
 	#>
 
 	[CmdletBinding(
 		SupportsShouldProcess=$true,
-		ConfirmImpact="Low"
+		ConfirmImpact="Medium"
 	)]
 	
 	param (
 		# имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
-		# если явно домен не указан, то будет использован последний домен, указанный при вызовах yandex.api
 		[Parameter(
 			Mandatory=$false,
 			ValueFromPipeline=$true,
@@ -617,14 +571,15 @@ function Register-Admin {
 		.Component
 			API Яндекс.Почты для доменов
 		.Synopsis
-			Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина дополнительного администратора домена.
+			Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина 
+			дополнительного администратора домена.
 		.Description
-			Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина дополнительного администратора домена.
-			В качестве логина может быть указан только логин на @yandex.ru, но не на домене, делегированном на Яндекс.
-			Синтаксис запроса
-				https://pddimp.yandex.ru/api/multiadmin/add_admin.xml ? token =<токен> & domain =<имя домена> & login =<логин администратора>
+			Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина 
+			дополнительного администратора домена. 
+			В качестве логина может быть указан только логин на @yandex.ru, но не на домене, 
+			делегированном на Яндекс.
 		.Link
-			http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_admin.xml
+			[API Яндекс - set_admin](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_admin.xml)
 		.Example
 			Register-Admin -DomainName 'csm.nov.ru' -Credential 'sergei.e.gushchin';
 	#>
@@ -685,14 +640,15 @@ function Remove-Admin {
 		.Component
 			API Яндекс.Почты для доменов
 		.Synopsis
-			Метод (обёртка над Яндекс.API del_admin) предназначен для удаления дополнительного администратора домена.
+			Метод (обёртка над Яндекс.API del_admin) предназначен для удаления 
+			дополнительного администратора домена.
 		.Description
-			Метод (обёртка над Яндекс.API del_admin) предназначен для удаления дополнительного администратора домена.
-			В качестве логина может быть указан только логин на @yandex.ru, но не на домене, делегированном на Яндекс.
-			Синтаксис запроса
-				https://pddimp.yandex.ru/api/multiadmin/del_admin.xml ? token =<токен> & domain =<имя домена> & login =<имя почтового ящика>
+			Метод (обёртка над Яндекс.API del_admin) предназначен для удаления 
+			дополнительного администратора домена.
+			В качестве логина может быть указан только логин на @yandex.ru, но 
+			не на домене, делегированном на Яндекс.
 		.Link
-			http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_admin.xml
+			[API Яндекс - del_admin](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_admin.xml)
 		.Example
 			Remove-Admin -DomainName 'csm.nov.ru' -Credential 'sergei.e.gushchin';
 	#>
@@ -748,21 +704,20 @@ function Remove-Admin {
 	}
 }
 
-function Get-Admins {
+function Get-Admin {
 	<#
 		.Component
 			API Яндекс.Почты для доменов
 		.Synopsis
-			Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список дополнительных администраторов домена.
+			Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список 
+			дополнительных администраторов домена.
 		.Description
-			Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список дополнительных администраторов домена.
-			Метод возвращает список дополнительных администраторов для домена, привязанного к токену.
-			Синтаксис запроса
-				https://pddimp.yandex.ru/api/multiadmin/get_admins.xml ? token =<токен> & domain =<имя домена>
+			Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список 
+			дополнительных администраторов домена. 
 		.Link
-			http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_get_admins.xml
+			[API Яндекс - get_admins](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_get_admins.xml)
 		.Example
-			Get-Admins -DomainName 'csm.nov.ru';
+			Get-Admin -DomainName 'csm.nov.ru';
 	#>
 
 	[CmdletBinding(
@@ -801,7 +756,6 @@ function Get-Admins {
 
 Export-ModuleMember `
 	Get-Token `
-	, Get-CachedToken `
 	, Invoke-API `
     , Register-Domain `
     , Remove-Domain `
@@ -809,5 +763,5 @@ Export-ModuleMember `
     , Remove-Logo `
 	, Register-Admin `
 	, Remove-Admin `
-	, Get-Admins `
+	, Get-Admin `
 ;
