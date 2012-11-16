@@ -289,7 +289,7 @@ $($_.Value)
 	};
 	if ( $PSCmdlet.ShouldProcess( $DomainName, "Yandex.API.PDD::$method" ) ) {
 		try {
-			Write-Verbose "Вызов API $method для домена $($DomainName): $apiURI.";
+			Write-Verbose "Вызов API $method для домена $($DomainName): $($apiURI.AbsoluteUri)";
 			$resString = ( [string] ( & $WebMethodFunctional ) );
 			Write-Debug "Ответ API $method: $($resString).";
 			$res = [xml] $resString;
