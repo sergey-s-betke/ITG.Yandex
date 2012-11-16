@@ -201,14 +201,14 @@ function Invoke-API {
 	if ( -not $Token ) {
 		$Token = Get-Token $DomainName;
 	};
-	$Params.Add( 'token', $Token );
-	$Params.Add( 'domain', $DomainName );
-	
 	switch ( $HttpMethod ) {
 		( [System.Net.WebRequestMethods+HTTP]::Get ) {
 			$escapedParams = (
-				$Params.keys `
-				| % { "$_=$([System.Uri]::EscapeDataString($Params.$_))" } `
+				$Params `
+				| Set-ObjectProperty 'token' $Token -PassThru `
+				| Set-ObjectProperty 'domain' $DomainName -PassThru `
+				| ConvertFrom-Dictionary `
+				| % { "$($_.Key)=$([System.Uri]::EscapeDataString($_.Value))" } `
 			) -join '&';
 			$apiURI = [System.Uri]"$APIRoot/$method.xml?$escapedParams";
 			$wc = New-Object System.Net.WebClient;
@@ -228,19 +228,23 @@ function Invoke-API {
 				$writer = New-Object System.IO.StreamWriter( $reqStream );
 				$writer.AutoFlush = $true;
 				
-				foreach( $param in $Params.keys ) {
-					if ( $Params.$param -is [System.IO.FileInfo] ) {
+				$Params `
+				| Set-ObjectProperty 'token' $Token -PassThru `
+				| Set-ObjectProperty 'domain' $DomainName -PassThru `
+				| ConvertFrom-Dictionary `
+				| % {
+					if ( $_.Value -is [System.IO.FileInfo] ) {
 						$writer.Write( @"
 --$boundary
-Content-Disposition: form-data; name="$param"; filename="$($Params.$param.Name)"
-Content-Type: $(Get-MIME ($Params.$param))
+Content-Disposition: form-data; name="$($_.Key)"; filename="$($_.Value.Name)"
+Content-Type: $(Get-MIME ($_.Value))
 Content-Transfer-Encoding: binary
 
 
 "@
 						);
 						$fs = New-Object System.IO.FileStream (
-							$Params.$param.FullName,
+							$_.Value.FullName,
 							[System.IO.FileMode]::Open,
 							[System.IO.FileAccess]::Read,
 							[system.IO.FileShare]::Read
@@ -255,9 +259,9 @@ Content-Transfer-Encoding: binary
 					} else {
 						$writer.Write( @"
 --$boundary
-Content-Disposition: form-data; name="$param"
+Content-Disposition: form-data; name="$($_.Key)"
 
-$($Params.$param)
+$($_.Value)
 
 "@
 						);
