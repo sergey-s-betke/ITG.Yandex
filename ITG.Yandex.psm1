@@ -23,20 +23,20 @@ function Get-Token {
 			Метод (обёртка над Яндекс.API get_token) предназначен для получения авторизационного токена.
 		.Description
 			Метод get_token предназначен для получения авторизационного токена. 
-			Авторизационный токен используется для активации API Яндекс.Почты для доменов. Получать токен 
-			нужно только один раз. Чтобы получить токен, следует иметь подключенный домен, авторизоваться 
-			его администратором. 
-			Синтаксис запроса: 
-				https://pddimp.yandex.ru/get_token.xml ? 
-					domain_name =<имя домена> 
+			Авторизационный токен используется для активации API Яндекс.Почты для доменов. Получать токен
+			нужно только один раз. Чтобы получить токен, следует иметь подключенный домен, авторизоваться
+			его администратором.
+			Синтаксис запроса:
+				https://pddimp.yandex.ru/get_token.xml ?
+					domain_name =<имя домена>
 			Данная функция возвращает непосредственно токен, либо генерирует исключение.
 		.Outputs
 			[System.String] - собственно token
 		.Link
 			[API Яндекс.Почты - get_token](http://api.yandex.ru/pdd/doc/api-pdd/reference/get-token.xml#get-token)
 		.Example
-			$token = Get-Token -DomainName 'yourdomain.ru';
 			Получение токена для домена yourdomain.ru.
+			$token = Get-Token -DomainName 'yourdomain.ru';
 	#>
 
 	[CmdletBinding()]
@@ -350,13 +350,13 @@ function Register-Domain {
 		.Synopsis
 			Метод (обёртка над Яндекс.API reg_domain) предназначен для регистрации домена на сервисах Яндекса.
 		.Description
-			Метод регистрирует домен на сервисах Яндекса. 
+			Метод регистрирует домен на сервисах Яндекса.
 			Если домен уже подключен, то метод reg_domain не выполняет никаких действий.
 		.Link
 			[API Яндекс - reg_domain](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_reg_domain.xml)
 		.Example
+			Регистрация нескольких доменов:
 			$token = Get-Token -DomainName 'maindomain.ru';	'domain1.ru', 'domain2.ru' | Register-Domain -Token $token;
-			Регистрация нескольких доменов.
 	#>
 
 	[CmdletBinding(
@@ -410,9 +410,9 @@ function Remove-Domain {
 		.Synopsis
 			Метод (обёртка над Яндекс.API del_domain) предназначен для отключения домена от Яндекс.Почта для доменов.
 		.Description
-			Метод позволяет отключить домен. 
-			Отключенный домен перестает выводиться в списке доменов. После отключения домен можно подключить заново. 
-			Отключение домена не влечет за собой изменения MX-записей. MX-записи нужно устанавливать отдельно на 
+			Метод позволяет отключить домен.
+			Отключенный домен перестает выводиться в списке доменов. После отключения домен можно подключить заново.
+			Отключение домена не влечет за собой изменения MX-записей. MX-записи нужно устанавливать отдельно на
 			DNS-серверах, куда делегирован домен.
 		.Link
 			[API Яндекс - del_domain](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_domain.xml)
@@ -460,14 +460,14 @@ function Set-Logo {
 		.Synopsis
 			Метод (обёртка над Яндекс.API add_logo) предназначен для установки логотипа для домена.
 		.Description
-			Метод позволяет установить логотип домена. 
-			Поддерживаются графические файлы форматов jpg, gif, png размером 
+			Метод позволяет установить логотип домена.
+			Поддерживаются графические файлы форматов jpg, gif, png размером
 			до 2 Мбайт.
 		.Link
 			[API Яндекс - add_logo](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_logo.xml)
 		.Example
+			Установка логотипа для домена yourdomain.ru:
 			Set-Logo -DomainName 'yourdomain.ru' -Path 'c:\work\logo.png';
-			Установка логотипа для домена yourdomain.ru.
 	#>
 
 	[CmdletBinding(
@@ -488,7 +488,7 @@ function Set-Logo {
 		[Alias("Domain")]
 		$DomainName
 	,
-		# путь к файлу логотипа. 
+		# путь к файлу логотипа.
 		# Поддерживаются графические файлы форматов jpg, gif, png размером до 2 Мбайт
 		[Parameter(
 			Mandatory=$true,
@@ -533,8 +533,8 @@ function Remove-Logo {
 			Remove-Logo -DomainName 'yourdomain.ru';
 			Удаление логотипа для домена yourdomain.ru.
 		.Example
+			Удаление логотипа для нескольких доменов:
 			'domain1.ru', 'domain2.ru' | Remove-Logo;
-			Удаление логотипа для нескольких доменов.
 	#>
 
 	[CmdletBinding(
@@ -575,12 +575,12 @@ function Register-Admin {
 		.Component
 			API Яндекс.Почты для доменов
 		.Synopsis
-			Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина 
+			Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина
 			дополнительного администратора домена.
 		.Description
-			Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина 
-			дополнительного администратора домена. 
-			В качестве логина может быть указан только логин на @yandex.ru, но не на домене, 
+			Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина
+			дополнительного администратора домена.
+			В качестве логина может быть указан только логин на @yandex.ru, но не на домене,
 			делегированном на Яндекс.
 		.Link
 			[API Яндекс - set_admin](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_admin.xml)
@@ -644,12 +644,12 @@ function Remove-Admin {
 		.Component
 			API Яндекс.Почты для доменов
 		.Synopsis
-			Метод (обёртка над Яндекс.API del_admin) предназначен для удаления 
+			Метод (обёртка над Яндекс.API del_admin) предназначен для удаления
 			дополнительного администратора домена.
 		.Description
-			Метод (обёртка над Яндекс.API del_admin) предназначен для удаления 
+			Метод (обёртка над Яндекс.API del_admin) предназначен для удаления
 			дополнительного администратора домена.
-			В качестве логина может быть указан только логин на @yandex.ru, но 
+			В качестве логина может быть указан только логин на @yandex.ru, но
 			не на домене, делегированном на Яндекс.
 		.Link
 			[API Яндекс - del_admin](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_admin.xml)
@@ -713,11 +713,11 @@ function Get-Admin {
 		.Component
 			API Яндекс.Почты для доменов
 		.Synopsis
-			Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список 
+			Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список
 			дополнительных администраторов домена.
 		.Description
-			Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список 
-			дополнительных администраторов домена. 
+			Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список
+			дополнительных администраторов домена.
 		.Link
 			[API Яндекс - get_admins](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_get_admins.xml)
 		.Example
@@ -761,10 +761,10 @@ function Get-Admin {
 Export-ModuleMember `
 	Get-Token `
 	, Invoke-API `
-    , Register-Domain `
-    , Remove-Domain `
-    , Set-Logo `
-    , Remove-Logo `
+	, Register-Domain `
+	, Remove-Domain `
+	, Set-Logo `
+	, Remove-Logo `
 	, Register-Admin `
 	, Remove-Admin `
 	, Get-Admin `

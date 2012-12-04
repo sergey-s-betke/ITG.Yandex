@@ -3,7 +3,7 @@
 
 Обёртки для API Яндекс - базовый модуль для поддержки API различных сервисов Яндекса.
 
-Версия модуля: **1.1.3**
+Версия модуля: **1.1.4**
 
 Функции модуля
 --------------
@@ -509,9 +509,9 @@ API Яндекс.Почты для доменов
 
 ##### Примеры использования	
 
-1. Регистрация нескольких доменов.
+1. $token = Get-Token -DomainName 'maindomain.ru';	'domain1.ru', 'domain2.ru' | Register-Domain -Token $token;
 
-		$token = Get-Token -DomainName 'maindomain.ru';	'domain1.ru', 'domain2.ru' | Register-Domain -Token $token;
+		Регистрация нескольких доменов:
 
 ##### Связанные ссылки
 
@@ -652,9 +652,9 @@ API Яндекс.Почты для доменов
 
 		Remove-Logo -DomainName 'yourdomain.ru';
 
-2. Удаление логотипа для нескольких доменов.
+2. 'domain1.ru', 'domain2.ru' | Remove-Logo;
 
-		'domain1.ru', 'domain2.ru' | Remove-Logo;
+		Удаление логотипа для нескольких доменов:
 
 ##### Связанные ссылки
 
@@ -732,9 +732,9 @@ API Яндекс.Почты для доменов
 
 ##### Примеры использования	
 
-1. Установка логотипа для домена yourdomain.ru.
+1. Set-Logo -DomainName 'yourdomain.ru' -Path 'c:\work\logo.png';
 
-		Set-Logo -DomainName 'yourdomain.ru' -Path 'c:\work\logo.png';
+		Установка логотипа для домена yourdomain.ru:
 
 ##### Связанные ссылки
 
@@ -791,9 +791,9 @@ API Яндекс
 
 ##### Примеры использования	
 
-1. Получение токена для домена yourdomain.ru.
+1. $token = Get-Token -DomainName 'yourdomain.ru';
 
-		$token = Get-Token -DomainName 'yourdomain.ru';
+		Получение токена для домена yourdomain.ru.
 
 ##### Связанные ссылки
 

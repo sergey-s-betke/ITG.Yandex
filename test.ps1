@@ -12,4 +12,4 @@ Import-Module `
 	-PassThru `
 | Get-Readme -OutDefaultFile;
 
-Get-Token -DomainName 'csm.nov.ru';
+# Get-Token -DomainName 'csm.nov.ru';
