@@ -291,7 +291,7 @@ $($_.Value)
 		try {
 			Write-Verbose "Вызов API $method для домена $($DomainName): $($apiURI.AbsoluteUri)";
 			$resString = ( [string] ( & $WebMethodFunctional ) );
-			Write-Debug "Ответ API $method: $($resString).";
+			Write-Debug "Ответ API ${method}: $($resString).";
 			$res = [xml] $resString;
 		
 			if ( (
@@ -311,7 +311,7 @@ $($_.Value)
 					-InputObject $res `
 					-ErrorAction Continue `
 			) ) {
-				Write-Verbose "Ответ API $method: $($resString).";
+				Write-Verbose "Ответ API ${method}: $($resString).";
 				$ErrorMsg = Invoke-Command `
 					-ScriptBlock { $input | % -Process $FailureMsgFilter } `
 					-InputObject $res `
@@ -324,7 +324,7 @@ $($_.Value)
 					-RecommendedAction 'Проверьте правильность указания домена и Ваши права на домен.' `
 				;
 			} else { # недиагностируемая ошибка вызова API
-				Write-Verbose "Ответ API $method: $($resString).";
+				Write-Verbose "Ответ API ${method}: $($resString).";
 				Write-Error `
 					-Message $UnknownErrorMsg `
 					-Category InvalidResult `
@@ -333,7 +333,7 @@ $($_.Value)
 				;
 			};
 		} catch {
-			Write-Verbose "Ответ API $method: $($resString).";
+			Write-Verbose "Ответ API ${method}: $($resString).";
 			Write-Error `
 				-Message "$UnknownErrorMsg ($($_.Exception.Message))." `
 				-Category InvalidOperation `
