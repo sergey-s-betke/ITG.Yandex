@@ -33,10 +33,10 @@ function Get-Token {
 		.Outputs
 			[System.String] - собственно token
 		.Link
-			[API Яндекс.Почты - get_token](http://api.yandex.ru/pdd/doc/api-pdd/reference/get-token.xml#get-token)
+			[get_token]: http://api.yandex.ru/pdd/doc/api-pdd/reference/get-token.xml#get-token
 		.Example
-			Получение токена для домена yourdomain.ru.
 			$token = Get-Token -DomainName 'yourdomain.ru';
+			Получение токена для домена yourdomain.ru.
 	#>
 
 	[CmdletBinding()]
@@ -353,10 +353,10 @@ function Register-Domain {
 			Метод регистрирует домен на сервисах Яндекса.
 			Если домен уже подключен, то метод reg_domain не выполняет никаких действий.
 		.Link
-			[API Яндекс - reg_domain](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_reg_domain.xml)
+			[reg_domain]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_reg_domain.xml
 		.Example
-			Регистрация нескольких доменов:
 			$token = Get-Token -DomainName 'maindomain.ru';	'domain1.ru', 'domain2.ru' | Register-Domain -Token $token;
+			Регистрация нескольких доменов
 	#>
 
 	[CmdletBinding(
@@ -415,7 +415,7 @@ function Remove-Domain {
 			Отключение домена не влечет за собой изменения MX-записей. MX-записи нужно устанавливать отдельно на
 			DNS-серверах, куда делегирован домен.
 		.Link
-			[API Яндекс - del_domain](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_domain.xml)
+			[del_domain]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_domain.xml
 		.Example
 			Remove-Domain -DomainName 'test.ru';
 	#>
@@ -464,10 +464,10 @@ function Set-Logo {
 			Поддерживаются графические файлы форматов jpg, gif, png размером
 			до 2 Мбайт.
 		.Link
-			[API Яндекс - add_logo](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_logo.xml)
+			[add_logo]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_logo.xml
 		.Example
-			Установка логотипа для домена yourdomain.ru:
 			Set-Logo -DomainName 'yourdomain.ru' -Path 'c:\work\logo.png';
+			Установка логотипа для домена yourdomain.ru
 	#>
 
 	[CmdletBinding(
@@ -528,13 +528,13 @@ function Remove-Logo {
 		.Description
 			Метод позволяет удалить логотип домена.
 		.Link
-			[API Яндекс - del_logo](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_logo.xml#domain-control_del_logo)
+			[del_logo]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_logo.xml#domain-control_del_logo
 		.Example
 			Remove-Logo -DomainName 'yourdomain.ru';
 			Удаление логотипа для домена yourdomain.ru.
 		.Example
-			Удаление логотипа для нескольких доменов:
 			'domain1.ru', 'domain2.ru' | Remove-Logo;
+			Удаление логотипа для нескольких доменов.
 	#>
 
 	[CmdletBinding(
@@ -583,7 +583,7 @@ function Register-Admin {
 			В качестве логина может быть указан только логин на @yandex.ru, но не на домене,
 			делегированном на Яндекс.
 		.Link
-			[API Яндекс - set_admin](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_admin.xml)
+			[set_admin]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_admin.xml
 		.Example
 			Register-Admin -DomainName 'csm.nov.ru' -Credential 'sergei.e.gushchin';
 	#>
@@ -652,7 +652,7 @@ function Remove-Admin {
 			В качестве логина может быть указан только логин на @yandex.ru, но
 			не на домене, делегированном на Яндекс.
 		.Link
-			[API Яндекс - del_admin](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_admin.xml)
+			[del_admin]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_admin.xml
 		.Example
 			Remove-Admin -DomainName 'csm.nov.ru' -Credential 'sergei.e.gushchin';
 	#>
@@ -719,7 +719,7 @@ function Get-Admin {
 			Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список
 			дополнительных администраторов домена.
 		.Link
-			[API Яндекс - get_admins](http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_get_admins.xml)
+			[get_admins]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_get_admins.xml
 		.Example
 			Get-Admin -DomainName 'csm.nov.ru';
 	#>
