@@ -287,9 +287,12 @@ $($_.Value)
 	};
 	if ( $PSCmdlet.ShouldProcess( $DomainName, "Yandex.API.PDD::$method" ) ) {
 		try {
-			Write-Verbose "Вызов API $method для домена $($DomainName): $($apiURI.AbsoluteUri)";
+			Write-Debug "Вызов API $method для домена $($DomainName): $($apiURI.AbsoluteUri)";
 			$resString = ( [string] ( & $WebMethodFunctional ) );
-			Write-Debug "Ответ API ${method}: $($resString).";
+			Write-Debug @"
+Ответ API ${method}:
+$($resString)
+"@
 			$res = [xml] $resString;
 		
 			if ( (
@@ -397,6 +400,10 @@ function Register-Domain {
 					, @{Name='SecretName'; Expression={$_.secret_name.'#text'}} `
 					, @{Name='SecretValue'; Expression={$_.secret_value.'#text'}} `
 			} `
+			-Debug:$DebugPreference `
+			-Verbose:$VerbosePreference `
+			-Confirm:$VerbosePreference `
+			-WhatIf:$WhatIfPreference `
 		;
 	}
 }
@@ -446,6 +453,10 @@ function Remove-Domain {
 			-method 'api/del_domain' `
 			-DomainName $DomainName `
 			-SuccessMsg "Домен $($DomainName) успешно отключен." `
+			-Debug:$DebugPreference `
+			-Verbose:$VerbosePreference `
+			-Confirm:$VerbosePreference `
+			-WhatIf:$WhatIfPreference `
 		;
 		if ( $PassThru ) { $input };
 	}
@@ -512,6 +523,10 @@ function Set-Logo {
 			-SuccessMsg "Логотип для домена $($DomainName) установлен." `
 			-IsFailurePredicate { [bool]$_.action.domains.domain.logo.'action-status'.get_item('error') } `
 			-FailureMsgFilter { $_.action.domains.domain.logo.'action-status'.error } `
+			-Debug:$DebugPreference `
+			-Verbose:$VerbosePreference `
+			-Confirm:$VerbosePreference `
+			-WhatIf:$WhatIfPreference `
 		;
 		if ( $PassThru ) { $input };
 	}
@@ -563,6 +578,10 @@ function Remove-Logo {
 			-method 'api/del_logo' `
 			-DomainName $DomainName `
 			-SuccessMsg "Логотип для домена $($DomainName) удалён." `
+			-Debug:$DebugPreference `
+			-Verbose:$VerbosePreference `
+			-Confirm:$VerbosePreference `
+			-WhatIf:$WhatIfPreference `
 		;
 		if ( $PassThru ) { $input };
 	}
@@ -632,6 +651,10 @@ function Register-Admin {
 			-IsSuccessPredicate { [bool]$_.SelectSingleNode('action/domain/status/success') } `
 			-IsFailurePredicate { [bool]$_.SelectSingleNode('action/domain/status/error') } `
 			-FailureMsgFilter { $_.action.domain.status.error } `
+			-Debug:$DebugPreference `
+			-Verbose:$VerbosePreference `
+			-Confirm:$VerbosePreference `
+			-WhatIf:$WhatIfPreference `
 		;
 		if ( $PassThru ) { $input };
 	}
@@ -701,6 +724,10 @@ function Remove-Admin {
 			-IsSuccessPredicate { [bool]$_.SelectSingleNode('action/domain/status/success') } `
 			-IsFailurePredicate { [bool]$_.SelectSingleNode('action/domain/status/error') } `
 			-FailureMsgFilter { $_.action.domain.status.error } `
+			-Debug:$DebugPreference `
+			-Verbose:$VerbosePreference `
+			-Confirm:$VerbosePreference `
+			-WhatIf:$WhatIfPreference `
 		;
 		if ( $PassThru ) { $input };
 	}
@@ -723,7 +750,6 @@ function Get-Admin {
 	#>
 
 	[CmdletBinding(
-		SupportsShouldProcess=$true,
 		ConfirmImpact="Low"
 	)]
 	
@@ -752,6 +778,9 @@ function Get-Admin {
 				$_.SelectNodes('action/domain/other-admins/login') `
 				| %{ $_.'#text'; } `
 			} `
+			-Debug:$DebugPreference `
+			-Verbose:$VerbosePreference `
+			-Confirm:$VerbosePreference `
 		;
 	}
 }
