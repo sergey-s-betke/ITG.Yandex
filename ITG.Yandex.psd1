@@ -14,7 +14,7 @@
 ModuleToProcess = 'ITG.Yandex.psm1'
 
 # Номер версии данного модуля.
-ModuleVersion = '1.1.5'
+ModuleVersion = '1.1.6'
 
 # Уникальный идентификатор данного модуля
 GUID = '826e836c-d10c-4d4d-b86b-8b4a41829b99'

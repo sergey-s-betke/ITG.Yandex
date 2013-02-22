@@ -67,6 +67,7 @@ function Get-Token {
 			};
 		} else {
 			$get_tokenURI = [System.Uri]"$APIRoot/get_token.xml?domain_name=$( [System.Uri]::EscapeDataString( $DomainName ) )";
+			$get_tokenResponseURI = [System.Uri]"$APIRoot/token/get.xml";
 			$get_tokenAuthURI = [System.Uri]"https://passport.yandex.ru/passport?mode=auth&msg=pdd&retpath=$( [System.Uri]::EscapeDataString( $get_tokenURI ) )";
 
 			try {
@@ -85,7 +86,7 @@ function Get-Token {
 				Write-Verbose 'Ждём либо пока Яндекс.Паспорт сработает по cookies, либо пока администратор авторизуется на Яндекс.Паспорт...';
 				while ( `
 					$ie.Busy `
-					-or (-not ([System.Uri]$ie.LocationURL).IsBaseOf( $get_tokenURI ) ) `
+					-or ( ( [System.Uri]$ie.LocationURL ) -ne $get_tokenResponseURI ) `
 				) { Sleep -milliseconds 100; };
 				$ie.Visible = $False;
 
