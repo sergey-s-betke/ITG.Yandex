@@ -72,7 +72,14 @@ function Get-Token {
 
 			try {
 				Write-Verbose 'Создаём экземпляр InternetExplorer.';
-				$ie = New-Object -Comobject InternetExplorer.application;
+                if ( -not ( $ExistsIEProgId = Test-Path 'Registry::HKEY_CLASSES_ROOT\InternetExplorer.Application.Medium' )  ) {
+                    $null = New-Item -Path 'HKCU:\Software\Classes' -Name 'InternetExplorer.Application.Medium' -Value 'Internet Explorer';
+                    $null = New-Item -Path 'HKCU:\Software\Classes\InternetExplorer.Application.Medium' -Name 'CLSID' -Value '{D5E8041D-920F-45e9-B8FB-B1DEB82C6E5E}';
+                };
+				$ie = New-Object -Comobject 'InternetExplorer.Application.Medium';
+                if ( -not $ExistsIEProgId ) {
+                    Remove-Item -Path 'HKCU:\Software\Classes\InternetExplorer.Application.Medium' -Recurse -Force;
+                };
 				Write-Verbose "Отправляем InternetExplorer на Яндекс.Паспорт ($get_tokenAuthURI).";
 				$ie.Navigate( $get_tokenAuthURI );
 				$ie.Visible = $True;
