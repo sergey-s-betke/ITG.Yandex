@@ -63,7 +63,7 @@ function Get-Token {
 			if ( $TokenForDomain.ContainsKey( $DomainName ) ) {
 				return $TokenForDomain.$DomainName;
 			} else {
-				return $TokenForDomain.$DomainName = Get-Token -DomainName $DomainName -NoCache;
+				return $TokenForDomain.$DomainName = Get-Token -DomainName $DomainName -NoCache -ErrorAction Stop;
 			};
 		} else {
 			$get_tokenURI = [System.Uri]"$APIRoot/get_token.xml?domain_name=$( [System.Uri]::EscapeDataString( $DomainName ) )";
