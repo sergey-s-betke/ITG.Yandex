@@ -15,6 +15,48 @@ Set-Variable `
 	-Value (@{}) `
 ;
 
+function Set-Token {
+	<#
+		.Component
+			API Яндекс
+		.Synopsis
+			Установка токена для других методов API.
+		.Description
+			Данный метод позволяет задать токен, полученный ранее через Get-Token, для последующих 
+            вызовов командлет данного модуля.
+		.Example
+			Set-Token -DomainName 'yourdomain.ru' -Token '1234567890';
+			Задание токена для домена yourdomain.ru.
+	#>
+
+	param (
+		# имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
+		[Parameter(
+			Mandatory=$true,
+			Position=0,
+			ValueFromPipelineByPropertyName=$true
+		)]
+		[string]
+		[ValidateScript( { $_ -match "^$($reDomain)$" } )]
+		[Alias("domain_name")]
+		[Alias("Domain")]
+		$DomainName
+	,
+		# авторизационный токен, полученный через Get-Token
+		[Parameter(
+			Mandatory=$true,
+			Position=1,
+			ValueFromPipelineByPropertyName=$true
+		)]
+		[string]
+		$Token
+	)
+
+	process {
+		$TokenForDomain[$DomainName] = $Token;
+	}
+};
+
 function Get-Token {
 	<#
 		.Component
@@ -63,7 +105,9 @@ function Get-Token {
 			if ( $TokenForDomain.ContainsKey( $DomainName ) ) {
 				return $TokenForDomain.$DomainName;
 			} else {
-				return $TokenForDomain.$DomainName = Get-Token -DomainName $DomainName -NoCache -ErrorAction Stop;
+                $Token = Get-Token -DomainName $DomainName -NoCache -ErrorAction Stop;
+                Set-Token -DomainName $DomainName -Token $Token;
+				return $Token;
 			};
 		} else {
 			$get_tokenURI = [System.Uri]"$APIRoot/get_token.xml?domain_name=$( [System.Uri]::EscapeDataString( $DomainName ) )";
@@ -795,6 +839,7 @@ function Get-Admin {
 
 Export-ModuleMember `
 	Get-Token `
+	, Set-Token `
 	, Invoke-API `
 	, Register-Domain `
 	, Remove-Domain `
