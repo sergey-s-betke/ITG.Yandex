@@ -3,18 +3,26 @@
 param (
 )
 
-Import-Module `
+<#
+$module = Import-Module `
     (Join-Path `
 		-Path ( Split-Path -Path ( $MyInvocation.MyCommand.Path ) ) `
         -ChildPath 'ITG.Yandex' `
     ) `
 	-Force `
-	-PassThru `
-| Get-Readme `
-	-OutDefaultFile `
-	-ReferencedModules @(
-		'ITG.Utils', 'ITG.WinAPI.UrlMon', 'ITG.WinAPI.User32' | Get-Module
-	) `
+;
+#>
+
+Import-Module `
+    -Name 'ITG.Yandex' `
+	-Force `
+;
+$m = Get-Module -Name 'ITG.Yandex';
+$m | Set-Readme `
+    -Path ( `
+	    $m.ModuleBase `
+	    | Join-Path -ChildPath 'readme.md' `
+    ) `
 ;
 
 <#
@@ -38,11 +46,8 @@ $SecureToken = ConvertTo-SecureString -String (`
     'dfe8ae30bad6b950af7d3437062d051f2bcac5fb118472b1701d43adbf0e0281'+
     'e5904256d5f7f305212714000000aa50cbd989d1423053c51a2062c07cbdb3720c2a'
 );
-$BSTRToken = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR( $SecureToken );
-$PlainToken = [System.Runtime.InteropServices.marshal]::PtrToStringAuto( $BSTRToken );
-[System.Runtime.InteropServices.marshal]::FreeBSTR( $BSTRToken );
 
 Set-Token `
     -DomainName 'csm.nov.ru' `
-    -Token $PlainToken `
+    -Token $SecureToken `
 ;

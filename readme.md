@@ -3,7 +3,7 @@
 
 Обёртки для API Яндекс - базовый модуль для поддержки API различных сервисов Яндекса.
 
-Версия модуля: **1.1.6**
+Версия модуля: **2.0.0**
 
 Функции модуля
 --------------
@@ -43,7 +43,7 @@
 
 Обёртка для вызовов методов API Яндекс. Предназначена для внутреннего использования.
 
-	Invoke-API [[-HttpMethod] <String>] [[-Token] <String>] [-method] <String> [-DomainName] <String> [[-Params] <IDictionary>] [[-IsSuccessPredicate] <ScriptBlock>] [[-IsFailurePredicate] <ScriptBlock>] [[-ResultFilter] <ScriptBlock>] [[-SuccessMsg] <String>] [[-FailureMsg] <String>] [[-FailureMsgFilter] <ScriptBlock>] [[-UnknownErrorMsg] <String>] [-WhatIf] [-Confirm] <CommonParameters>
+	Invoke-API [[-HttpMethod] <String>] [[-Token] <SecureString>] [-method] <String> [-DomainName] <String> [[-Params] <IDictionary>] [[-IsSuccessPredicate] <ScriptBlock>] [[-IsFailurePredicate] <ScriptBlock>] [[-ResultFilter] <ScriptBlock>] [[-SuccessMsg] <String>] [[-FailureMsg] <String>] [[-FailureMsgFilter] <ScriptBlock>] [[-UnknownErrorMsg] <String>] [-WhatIf] [-Confirm] <CommonParameters>
 
 Подробнее - [Invoke-API][].
 
@@ -53,7 +53,7 @@
 
 Метод (обёртка над Яндекс.API [reg_domain][]) предназначен для регистрации домена на сервисах Яндекса.
 
-	Register-Domain [-DomainName] <String> [-Token] <String> [-WhatIf] [-Confirm] <CommonParameters>
+	Register-Domain [-DomainName] <String> [-Token] <SecureString> [-WhatIf] [-Confirm] <CommonParameters>
 
 Подробнее - [Register-Domain][].
 
@@ -97,7 +97,7 @@
 
 Установка токена для других методов API.
 
-	Set-Token [-DomainName] <String> [-Token] <String> <CommonParameters>
+	Set-Token [-DomainName] <String> [-Token] <SecureString> <CommonParameters>
 
 Подробнее - [Set-Token][].
 
@@ -308,7 +308,7 @@ API Яндекс.Почты для доменов
 
 ##### Синтаксис
 
-	Invoke-API [[-HttpMethod] <String>] [[-Token] <String>] [-method] <String> [-DomainName] <String> [[-Params] <IDictionary>] [[-IsSuccessPredicate] <ScriptBlock>] [[-IsFailurePredicate] <ScriptBlock>] [[-ResultFilter] <ScriptBlock>] [[-SuccessMsg] <String>] [[-FailureMsg] <String>] [[-FailureMsgFilter] <ScriptBlock>] [[-UnknownErrorMsg] <String>] [-WhatIf] [-Confirm] <CommonParameters>
+	Invoke-API [[-HttpMethod] <String>] [[-Token] <SecureString>] [-method] <String> [-DomainName] <String> [[-Params] <IDictionary>] [[-IsSuccessPredicate] <ScriptBlock>] [[-IsFailurePredicate] <ScriptBlock>] [[-ResultFilter] <ScriptBlock>] [[-SuccessMsg] <String>] [[-FailureMsg] <String>] [[-FailureMsgFilter] <ScriptBlock>] [[-UnknownErrorMsg] <String>] [-WhatIf] [-Confirm] <CommonParameters>
 
 ##### Компонент
 
@@ -329,7 +329,7 @@ API Яндекс
         Принимать входные данные конвейера?false
         Принимать подстановочные знаки?false
 
-- `Token <String>`
+- `Token <SecureString>`
         авторизационный токен, полученный через [Get-Token][]
 
         Требуется? false
@@ -375,7 +375,8 @@ API Яндекс
         Принимать подстановочные знаки?false
 
 - `IsFailurePredicate <ScriptBlock>`
-        предикат ошибки при выполнении метода API. Если ни один из предикатов не вернёт $true - генерируем неизвестную ошибку
+        предикат ошибки при выполнении метода API. Если ни один из предикатов не вернёт $true - генерируем неизвестную оши
+        бку
 
         Требуется? false
         Позиция? 7
@@ -459,7 +460,7 @@ API Яндекс
 
 ##### Синтаксис
 
-	Register-Domain [-DomainName] <String> [-Token] <String> [-WhatIf] [-Confirm] <CommonParameters>
+	Register-Domain [-DomainName] <String> [-Token] <SecureString> [-WhatIf] [-Confirm] <CommonParameters>
 
 ##### Компонент
 
@@ -476,7 +477,7 @@ API Яндекс.Почты для доменов
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
         Принимать подстановочные знаки?false
 
-- `Token <String>`
+- `Token <SecureString>`
         авторизационный токен, полученный через [Get-Token][], для другого, уже зарегистрированного домена
 
         Требуется? true
@@ -755,7 +756,7 @@ API Яндекс
 
 ##### Передаваемые по конвейеру данные
 
-- [System.String] - собственно token
+- [System.Security.SecureString] - собственно token
 
 ##### Параметры
 
@@ -802,7 +803,7 @@ API Яндекс
 
 ##### Синтаксис
 
-	Set-Token [-DomainName] <String> [-Token] <String> <CommonParameters>
+	Set-Token [-DomainName] <String> [-Token] <SecureString> <CommonParameters>
 
 ##### Компонент
 
@@ -819,7 +820,7 @@ API Яндекс
         Принимать входные данные конвейера?true (ByPropertyName)
         Принимать подстановочные знаки?false
 
-- `Token <String>`
+- `Token <SecureString>`
         авторизационный токен, полученный через [Get-Token][]
 
         Требуется? true
@@ -840,7 +841,7 @@ API Яндекс
 
 1. Задание токена для домена yourdomain.ru.
 
-		Set-Token -DomainName 'yourdomain.ru' -Token '1234567890';
+		Set-Token -DomainName 'yourdomain.ru' -Token $SecureStringToken;
 
 
 [about_CommonParameters]: http://go.microsoft.com/fwlink/?LinkID=113216 "Describes the parameters that can be used with any cmdlet."

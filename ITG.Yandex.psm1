@@ -25,7 +25,7 @@ function Set-Token {
 			Данный метод позволяет задать токен, полученный ранее через Get-Token, для последующих
 			вызовов командлет данного модуля.
 		.Example
-			Set-Token -DomainName 'yourdomain.ru' -Token '1234567890';
+			Set-Token -DomainName 'yourdomain.ru' -Token $SecureStringToken;
 			Задание токена для домена yourdomain.ru.
 	#>
 
@@ -48,7 +48,7 @@ function Set-Token {
 			Position=1,
 			ValueFromPipelineByPropertyName=$true
 		)]
-		[string]
+		[SecureString]
 		$Token
 	)
 
@@ -71,7 +71,7 @@ function Get-Token {
 
 			Данная функция возвращает непосредственно токен, либо генерирует исключение.
 		.Outputs
-			[System.String] - собственно token
+			[System.Security.SecureString] - собственно token
 		.Link
 			[get_token]: http://api.yandex.ru/pdd/doc/api-pdd/reference/get-token.xml#get-token
 		.Example
@@ -105,7 +105,7 @@ function Get-Token {
 			if ( $TokenForDomain.ContainsKey( $DomainName ) ) {
 				return $TokenForDomain.$DomainName;
 			} else {
-                $Token = Get-Token -DomainName $DomainName -NoCache -ErrorAction Stop;
+                [String]$Token = Get-Token -DomainName $DomainName -NoCache -ErrorAction Stop;
                 Set-Token -DomainName $DomainName -Token $Token;
 				return $Token;
 			};
@@ -145,8 +145,14 @@ function Get-Token {
 				Write-Debug "Ответ API get_token: $($ie.document.documentElement.innerhtml).";
 				if ( $res.ok ) {
 					$token = [System.String]$res.ok.token;
-					Write-Verbose "Получили токен для домена $($DomainName): $token.";
-					return $token;
+					Write-Verbose "Получили токен для домена $($DomainName)";
+					Write-Debug $token;
+                    [SecureString] $SecureToken = ConvertTo-SecureString `
+                        -String $token `
+                        -AsPlainText `
+                        -Force `
+                    ;
+					return $SecureToken;
 				} else {
 					$errMsg = $res.error.reason;
 					Write-Error `
@@ -195,7 +201,7 @@ function Invoke-API {
 		# авторизационный токен, полученный через Get-Token
 		[Parameter(
 		)]
-		[string]
+		[SecureString]
 		$Token
 	,
 		# метод API - компонент url
@@ -251,11 +257,15 @@ function Invoke-API {
 	if ( -not $Token ) {
 		$Token = Get-Token $DomainName;
 	};
+    $BSTRToken = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR( $SecureToken );
+    $PlainTextToken = [System.Runtime.InteropServices.marshal]::PtrToStringAuto( $BSTRToken );
+    [System.Runtime.InteropServices.marshal]::FreeBSTR( $BSTRToken );
+
 	switch ( $HttpMethod ) {
 		( [System.Net.WebRequestMethods+HTTP]::Get ) {
 			$escapedParams = (
 				$Params `
-				| Set-ObjectProperty 'token' $Token -PassThru `
+				| Set-ObjectProperty 'token' $PlainTextToken -PassThru `
 				| Set-ObjectProperty 'domain' $DomainName -PassThru `
 				| ConvertFrom-Dictionary `
 				| % { "$($_.Key)=$([System.Uri]::EscapeDataString($_.Value))" } `
@@ -434,7 +444,7 @@ function Register-Domain {
 		[Parameter(
 			Mandatory=$true
 		)]
-		[string]
+		[SecureString]
 		[ValidateNotNullOrEmpty()]
 		$Token
 	)

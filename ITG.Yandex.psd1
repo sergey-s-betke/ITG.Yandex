@@ -14,7 +14,7 @@
 ModuleToProcess = 'ITG.Yandex.psm1'
 
 # Номер версии данного модуля.
-ModuleVersion = '1.1.6'
+ModuleVersion = '2.0.0'
 
 # Уникальный идентификатор данного модуля
 GUID = '826e836c-d10c-4d4d-b86b-8b4a41829b99'
@@ -32,7 +32,7 @@ Copyright = '(c) 2012 Sergey S. Betke. All rights reserved.'
 Description = 'Обёртки для API Яндекс - базовый модуль для поддержки API различных сервисов Яндекса.'
 
 # Минимальный номер версии обработчика Windows PowerShell, необходимой для работы данного модуля
-PowerShellVersion = '2.0'
+PowerShellVersion = '3.0'
 
 # Имя узла Windows PowerShell, необходимого для работы данного модуля
 PowerShellHostName = ''
