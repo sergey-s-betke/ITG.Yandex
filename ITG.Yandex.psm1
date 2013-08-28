@@ -258,8 +258,11 @@ function Invoke-API {
 		$Token = Get-Token $DomainName;
 	};
     $BSTRToken = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR( $SecureToken );
-    $PlainTextToken = [System.Runtime.InteropServices.marshal]::PtrToStringAuto( $BSTRToken );
-    [System.Runtime.InteropServices.marshal]::FreeBSTR( $BSTRToken );
+    try {
+        $PlainTextToken = [System.Runtime.InteropServices.marshal]::PtrToStringAuto( $BSTRToken );
+    } finally {
+        [System.Runtime.InteropServices.marshal]::FreeBSTR( $BSTRToken );
+    }
 
 	switch ( $HttpMethod ) {
 		( [System.Net.WebRequestMethods+HTTP]::Get ) {
@@ -278,7 +281,6 @@ function Invoke-API {
 		}
 		( [System.Net.WebRequestMethods+HTTP]::Post ) {
 			$apiURI = [System.Uri] ( "$APIRoot/$method.xml" );
-			
 			$WebMethodFunctional = {
 				$wreq = [System.Net.WebRequest]::Create( $apiURI );
 				$wreq.Method = $HttpMethod;
@@ -289,7 +291,7 @@ function Invoke-API {
 				$writer.AutoFlush = $true;
 				
 				$Params `
-				| Set-ObjectProperty 'token' $Token -PassThru `
+				| Set-ObjectProperty 'token' $PlainTextToken -PassThru `
 				| Set-ObjectProperty 'domain' $DomainName -PassThru `
 				| ConvertFrom-Dictionary `
 				| % {
