@@ -25,17 +25,6 @@ $m | Set-Readme `
     ) `
 ;
 
-<#
-$Token = Get-Token -DomainName 'csm.nov.ru';
-[SecureString] $SecureToken = ConvertTo-SecureString `
-    -String $Token `
-    -AsPlainText `
-    -Force `
-;
-$CryptedToken = ConvertFrom-SecureString -SecureString $Token;
-$SecureToken = ConvertTo-SecureString -String $CryptedToken;
-#>
-
 $SecureToken = ConvertTo-SecureString -String (`
     '01000000d08c9ddf0115d1118c7a00c04fc297eb010000003c7609fd8f4ca94f'+
     '9aa41d9e6632179a0000000002000000000003660000c0000000100000000703'+
@@ -50,4 +39,13 @@ $SecureToken = ConvertTo-SecureString -String (`
 Set-Token `
     -DomainName 'csm.nov.ru' `
     -Token $SecureToken `
+;
+
+Set-Logo `
+    -DomainName 'csm.nov.ru' `
+    -Path (Join-Path `
+		-Path ( Split-Path -Path ( $MyInvocation.MyCommand.Path ) ) `
+        -ChildPath 'test\logo.jpg' `
+    ) `
+    -Verbose `
 ;

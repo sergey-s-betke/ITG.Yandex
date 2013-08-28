@@ -187,7 +187,7 @@ function Invoke-API {
 
 	[CmdletBinding(
 		SupportsShouldProcess=$true,
-		ConfirmImpact="Medium"
+		ConfirmImpact="Low"
 	)]
 	
 	param (
@@ -264,23 +264,22 @@ function Invoke-API {
         [System.Runtime.InteropServices.marshal]::FreeBSTR( $BSTRToken );
     }
 
+	$apiURI = [System.Uri] ( "$APIRoot/$method.xml" );
+	$Params.token = $PlainTextToken;
+ 	$Params.domain = $DomainName;
+
 	switch ( $HttpMethod ) {
 		( [System.Net.WebRequestMethods+HTTP]::Get ) {
-			$escapedParams = (
-				$Params `
-				| Set-ObjectProperty 'token' $PlainTextToken -PassThru `
-				| Set-ObjectProperty 'domain' $DomainName -PassThru `
-				| ConvertFrom-Dictionary `
-				| % { "$($_.Key)=$([System.Uri]::EscapeDataString($_.Value))" } `
-			) -join '&';
-			$apiURI = [System.Uri]"$APIRoot/$method.xml?$escapedParams";
-			$wc = New-Object System.Net.WebClient;
 			$WebMethodFunctional = {
-				$wc.DownloadString( $apiURI );
+                Invoke-RestMethod `
+                    -Uri $apiURI `
+                    -Method $HttpMethod `
+                    -Body $Params `
+                    -DisableKeepAlive `
+                ;
 			};
 		}
 		( [System.Net.WebRequestMethods+HTTP]::Post ) {
-			$apiURI = [System.Uri] ( "$APIRoot/$method.xml" );
 			$WebMethodFunctional = {
 				$wreq = [System.Net.WebRequest]::Create( $apiURI );
 				$wreq.Method = $HttpMethod;
@@ -291,8 +290,6 @@ function Invoke-API {
 				$writer.AutoFlush = $true;
 				
 				$Params `
-				| Set-ObjectProperty 'token' $PlainTextToken -PassThru `
-				| Set-ObjectProperty 'domain' $DomainName -PassThru `
 				| ConvertFrom-Dictionary `
 				| % {
 					if ( $_.Value -is [System.IO.FileInfo] ) {
@@ -345,20 +342,18 @@ $($_.Value)
 				$resStream.Close();
 				$wres.Close();				
 
-				$responseFromServer;
+				[xml]$responseFromServer;
 			};
 		}
 	};
 	if ( $PSCmdlet.ShouldProcess( $DomainName, "Yandex.API.PDD::$method" ) ) {
 		try {
 			Write-Debug "Вызов API $method для домена $($DomainName): $($apiURI.AbsoluteUri)";
-			$resString = ( [string] ( & $WebMethodFunctional ) );
+			$res = ( & $WebMethodFunctional );
 			Write-Debug @"
 Ответ API ${method}:
-$($resString)
+$($res.InnerXml)
 "@
-			$res = [xml] $resString;
-		
 			if ( (
 				Invoke-Command `
 					-ScriptBlock { $input | % -Process $IsSuccessPredicate } `
@@ -376,7 +371,7 @@ $($resString)
 					-InputObject $res `
 					-ErrorAction Continue `
 			) ) {
-				Write-Verbose "Ответ API ${method}: $($resString).";
+				Write-Verbose "Ответ API ${method}: $($res.InnerXml).";
 				$ErrorMsg = Invoke-Command `
 					-ScriptBlock { $input | % -Process $FailureMsgFilter } `
 					-InputObject $res `
@@ -389,7 +384,7 @@ $($resString)
 					-RecommendedAction 'Проверьте правильность указания домена и Ваши права на домен.' `
 				;
 			} else { # недиагностируемая ошибка вызова API
-				Write-Verbose "Ответ API ${method}: $($resString).";
+				Write-Verbose "Ответ API ${method}: $($res.InnerXml).";
 				Write-Error `
 					-Message $UnknownErrorMsg `
 					-Category InvalidResult `
@@ -398,7 +393,7 @@ $($resString)
 				;
 			};
 		} catch {
-			Write-Verbose "Ответ API ${method}: $($resString).";
+			Write-Verbose "Ответ API ${method}: $($res.InnerXml).";
 			Write-Error `
 				-Message "$UnknownErrorMsg ($($_.Exception.Message))." `
 				-Category InvalidOperation `
