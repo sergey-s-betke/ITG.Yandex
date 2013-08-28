@@ -258,8 +258,11 @@ function Invoke-API {
 		$Token = Get-Token $DomainName;
 	};
     $BSTRToken = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR( $SecureToken );
-    $PlainTextToken = [System.Runtime.InteropServices.marshal]::PtrToStringAuto( $BSTRToken );
-    [System.Runtime.InteropServices.marshal]::FreeBSTR( $BSTRToken );
+    try {
+        $PlainTextToken = [System.Runtime.InteropServices.marshal]::PtrToStringAuto( $BSTRToken );
+    } finally {
+        [System.Runtime.InteropServices.marshal]::FreeBSTR( $BSTRToken );
+    }
 
 	switch ( $HttpMethod ) {
 		( [System.Net.WebRequestMethods+HTTP]::Get ) {
