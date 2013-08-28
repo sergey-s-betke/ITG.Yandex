@@ -15,6 +15,48 @@ Set-Variable `
 	-Value (@{}) `
 ;
 
+function Set-Token {
+	<#
+		.Component
+			API Яндекс
+		.Synopsis
+			Установка токена для других методов API.
+		.Description
+			Данный метод позволяет задать токен, полученный ранее через Get-Token, для последующих
+			вызовов командлет данного модуля.
+		.Example
+			Set-Token -DomainName 'yourdomain.ru' -Token $SecureStringToken;
+			Задание токена для домена yourdomain.ru.
+	#>
+
+	param (
+		# имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
+		[Parameter(
+			Mandatory=$true,
+			Position=0,
+			ValueFromPipelineByPropertyName=$true
+		)]
+		[string]
+		[ValidateScript( { $_ -match "^$($reDomain)$" } )]
+		[Alias("domain_name")]
+		[Alias("Domain")]
+		$DomainName
+	,
+		# авторизационный токен, полученный через Get-Token
+		[Parameter(
+			Mandatory=$true,
+			Position=1,
+			ValueFromPipelineByPropertyName=$true
+		)]
+		[SecureString]
+		$Token
+	)
+
+	process {
+		$TokenForDomain[$DomainName] = $Token;
+	}
+};
+
 function Get-Token {
 	<#
 		.Component
@@ -29,7 +71,7 @@ function Get-Token {
 
 			Данная функция возвращает непосредственно токен, либо генерирует исключение.
 		.Outputs
-			[System.String] - собственно token
+			[System.Security.SecureString] - собственно token
 		.Link
 			[get_token]: http://api.yandex.ru/pdd/doc/api-pdd/reference/get-token.xml#get-token
 		.Example
@@ -63,7 +105,9 @@ function Get-Token {
 			if ( $TokenForDomain.ContainsKey( $DomainName ) ) {
 				return $TokenForDomain.$DomainName;
 			} else {
-				return $TokenForDomain.$DomainName = Get-Token -DomainName $DomainName -NoCache;
+                [String]$Token = Get-Token -DomainName $DomainName -NoCache -ErrorAction Stop;
+                Set-Token -DomainName $DomainName -Token $Token;
+				return $Token;
 			};
 		} else {
 			$get_tokenURI = [System.Uri]"$APIRoot/get_token.xml?domain_name=$( [System.Uri]::EscapeDataString( $DomainName ) )";
@@ -101,8 +145,14 @@ function Get-Token {
 				Write-Debug "Ответ API get_token: $($ie.document.documentElement.innerhtml).";
 				if ( $res.ok ) {
 					$token = [System.String]$res.ok.token;
-					Write-Verbose "Получили токен для домена $($DomainName): $token.";
-					return $token;
+					Write-Verbose "Получили токен для домена $($DomainName)";
+					Write-Debug $token;
+                    [SecureString] $SecureToken = ConvertTo-SecureString `
+                        -String $token `
+                        -AsPlainText `
+                        -Force `
+                    ;
+					return $SecureToken;
 				} else {
 					$errMsg = $res.error.reason;
 					Write-Error `
@@ -151,7 +201,7 @@ function Invoke-API {
 		# авторизационный токен, полученный через Get-Token
 		[Parameter(
 		)]
-		[string]
+		[SecureString]
 		$Token
 	,
 		# метод API - компонент url
@@ -207,11 +257,15 @@ function Invoke-API {
 	if ( -not $Token ) {
 		$Token = Get-Token $DomainName;
 	};
+    $BSTRToken = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR( $SecureToken );
+    $PlainTextToken = [System.Runtime.InteropServices.marshal]::PtrToStringAuto( $BSTRToken );
+    [System.Runtime.InteropServices.marshal]::FreeBSTR( $BSTRToken );
+
 	switch ( $HttpMethod ) {
 		( [System.Net.WebRequestMethods+HTTP]::Get ) {
 			$escapedParams = (
 				$Params `
-				| Set-ObjectProperty 'token' $Token -PassThru `
+				| Set-ObjectProperty 'token' $PlainTextToken -PassThru `
 				| Set-ObjectProperty 'domain' $DomainName -PassThru `
 				| ConvertFrom-Dictionary `
 				| % { "$($_.Key)=$([System.Uri]::EscapeDataString($_.Value))" } `
@@ -390,7 +444,7 @@ function Register-Domain {
 		[Parameter(
 			Mandatory=$true
 		)]
-		[string]
+		[SecureString]
 		[ValidateNotNullOrEmpty()]
 		$Token
 	)
@@ -795,6 +849,7 @@ function Get-Admin {
 
 Export-ModuleMember `
 	Get-Token `
+	, Set-Token `
 	, Invoke-API `
 	, Register-Domain `
 	, Remove-Domain `

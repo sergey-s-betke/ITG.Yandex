@@ -3,7 +3,7 @@
 
 Обёртки для API Яндекс - базовый модуль для поддержки API различных сервисов Яндекса.
 
-Версия модуля: **1.1.5**
+Версия модуля: **2.0.0**
 
 Функции модуля
 --------------
@@ -15,7 +15,7 @@
 Метод (обёртка над Яндекс.API [get_admins][]). Метод позволяет получить список
 дополнительных администраторов домена.
 
-	Get-Admin [[-DomainName] <String>] [-WhatIf] [-Confirm] <CommonParameters>
+	Get-Admin [[-DomainName] <String>] <CommonParameters>
 
 Подробнее - [Get-Admin][].
 
@@ -43,7 +43,7 @@
 
 Обёртка для вызовов методов API Яндекс. Предназначена для внутреннего использования.
 
-	Invoke-API [[-HttpMethod] <String>] [[-Token] <String>] [-method] <String> [-DomainName] <String> [[-Params] <IDictionary>] [[-IsSuccessPredicate] <ScriptBlock>] [[-IsFailurePredicate] <ScriptBlock>] [[-ResultFilter] <ScriptBlock>] [[-SuccessMsg] <String>] [[-FailureMsg] <String>] [[-FailureMsgFilter] <ScriptBlock>] [[-UnknownErrorMsg] <String>] [-WhatIf] [-Confirm] <CommonParameters>
+	Invoke-API [[-HttpMethod] <String>] [[-Token] <SecureString>] [-method] <String> [-DomainName] <String> [[-Params] <IDictionary>] [[-IsSuccessPredicate] <ScriptBlock>] [[-IsFailurePredicate] <ScriptBlock>] [[-ResultFilter] <ScriptBlock>] [[-SuccessMsg] <String>] [[-FailureMsg] <String>] [[-FailureMsgFilter] <ScriptBlock>] [[-UnknownErrorMsg] <String>] [-WhatIf] [-Confirm] <CommonParameters>
 
 Подробнее - [Invoke-API][].
 
@@ -53,7 +53,7 @@
 
 Метод (обёртка над Яндекс.API [reg_domain][]) предназначен для регистрации домена на сервисах Яндекса.
 
-	Register-Domain [-DomainName] <String> [-Token] <String> [-WhatIf] [-Confirm] <CommonParameters>
+	Register-Domain [-DomainName] <String> [-Token] <SecureString> [-WhatIf] [-Confirm] <CommonParameters>
 
 Подробнее - [Register-Domain][].
 
@@ -93,6 +93,14 @@
 
 Подробнее - [Get-Token][].
 
+#### Обзор [Set-Token][]
+
+Установка токена для других методов API.
+
+	Set-Token [-DomainName] <String> [-Token] <SecureString> <CommonParameters>
+
+Подробнее - [Set-Token][].
+
 Подробное описание функций модуля
 ---------------------------------
 
@@ -103,7 +111,7 @@
 
 ##### Синтаксис
 
-	Get-Admin [[-DomainName] <String>] [-WhatIf] [-Confirm] <CommonParameters>
+	Get-Admin [[-DomainName] <String>] <CommonParameters>
 
 ##### Компонент
 
@@ -118,29 +126,13 @@ API Яндекс.Почты для доменов
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
-        Принимать подстановочные знаки?
-
-- `WhatIf [<SwitchParameter>]`
-
-        Требуется? false
-        Позиция? named
-        Значение по умолчанию
-        Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
-
-- `Confirm [<SwitchParameter>]`
-
-        Требуется? false
-        Позиция? named
-        Значение по умолчанию
-        Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `<CommonParameters>`
-        Данный командлет поддерживает общие параметры: Verbose, Debug,
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer и OutVariable. Для получения дополнительных сведений введите
-        "get-help [about_CommonParameters][]".
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 
@@ -150,7 +142,7 @@ API Яндекс.Почты для доменов
 
 		Get-Admin -DomainName 'csm.nov.ru';
 
-##### Связанные ссылки
+##### См. также
 
 - [get_admins][]
 
@@ -178,7 +170,7 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Credential <String>`
         Логин дополнительного администратора на @yandex.ru
@@ -187,16 +179,16 @@ API Яндекс.Почты для доменов
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `PassThru [<SwitchParameter>]`
         передавать домены далее по конвейеру или нет
 
         Требуется? false
         Позиция? named
-        Значение по умолчанию
+        Значение по умолчанию False
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `WhatIf [<SwitchParameter>]`
 
@@ -204,7 +196,7 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Confirm [<SwitchParameter>]`
 
@@ -212,13 +204,13 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `<CommonParameters>`
-        Данный командлет поддерживает общие параметры: Verbose, Debug,
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer и OutVariable. Для получения дополнительных сведений введите
-        "get-help [about_CommonParameters][]".
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 
@@ -228,7 +220,7 @@ API Яндекс.Почты для доменов
 
 		Register-Admin -DomainName 'csm.nov.ru' -Credential 'sergei.e.gushchin';
 
-##### Связанные ссылки
+##### См. также
 
 - [set_admin][]
 
@@ -256,7 +248,7 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Credential <String>`
         Логин дополнительного администратора на @yandex.ru
@@ -265,16 +257,16 @@ API Яндекс.Почты для доменов
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `PassThru [<SwitchParameter>]`
         передавать домены далее по конвейеру или нет
 
         Требуется? false
         Позиция? named
-        Значение по умолчанию
+        Значение по умолчанию False
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `WhatIf [<SwitchParameter>]`
 
@@ -282,7 +274,7 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Confirm [<SwitchParameter>]`
 
@@ -290,13 +282,13 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `<CommonParameters>`
-        Данный командлет поддерживает общие параметры: Verbose, Debug,
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer и OutVariable. Для получения дополнительных сведений введите
-        "get-help [about_CommonParameters][]".
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 
@@ -306,7 +298,7 @@ API Яндекс.Почты для доменов
 
 		Remove-Admin -DomainName 'csm.nov.ru' -Credential 'sergei.e.gushchin';
 
-##### Связанные ссылки
+##### См. также
 
 - [del_admin][]
 
@@ -316,7 +308,7 @@ API Яндекс.Почты для доменов
 
 ##### Синтаксис
 
-	Invoke-API [[-HttpMethod] <String>] [[-Token] <String>] [-method] <String> [-DomainName] <String> [[-Params] <IDictionary>] [[-IsSuccessPredicate] <ScriptBlock>] [[-IsFailurePredicate] <ScriptBlock>] [[-ResultFilter] <ScriptBlock>] [[-SuccessMsg] <String>] [[-FailureMsg] <String>] [[-FailureMsgFilter] <ScriptBlock>] [[-UnknownErrorMsg] <String>] [-WhatIf] [-Confirm] <CommonParameters>
+	Invoke-API [[-HttpMethod] <String>] [[-Token] <SecureString>] [-method] <String> [-DomainName] <String> [[-Params] <IDictionary>] [[-IsSuccessPredicate] <ScriptBlock>] [[-IsFailurePredicate] <ScriptBlock>] [[-ResultFilter] <ScriptBlock>] [[-SuccessMsg] <String>] [[-FailureMsg] <String>] [[-FailureMsgFilter] <ScriptBlock>] [[-UnknownErrorMsg] <String>] [-WhatIf] [-Confirm] <CommonParameters>
 
 ##### Компонент
 
@@ -324,7 +316,7 @@ API Яндекс
 
 ##### Передаваемые по конвейеру данные
 
-[xml] - Результат, возвращённый API.
+- [xml] - Результат, возвращённый API.
 
 ##### Параметры
 
@@ -333,18 +325,18 @@ API Яндекс
 
         Требуется? false
         Позиция? 1
-        Значение по умолчанию
+        Значение по умолчанию GET
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
-- `Token <String>`
+- `Token <SecureString>`
         авторизационный токен, полученный через [Get-Token][]
 
         Требуется? false
         Позиция? 2
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `method <String>`
         метод API - компонент url
@@ -353,7 +345,7 @@ API Яндекс
         Позиция? 3
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `DomainName <String>`
         имя домена для регистрации на сервисах Яндекса
@@ -362,25 +354,25 @@ API Яндекс
         Позиция? 4
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Params <IDictionary>`
         коллекция параметров метода API
 
         Требуется? false
         Позиция? 5
-        Значение по умолчанию
+        Значение по умолчанию @{}
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `IsSuccessPredicate <ScriptBlock>`
         предикат успешного выполнения метода API
 
         Требуется? false
         Позиция? 6
-        Значение по умолчанию
+        Значение по умолчанию { [bool]$_.action.status.success }
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `IsFailurePredicate <ScriptBlock>`
         предикат ошибки при выполнении метода API. Если ни один из предикатов не вернёт $true - генерируем неизвестную оши
@@ -388,54 +380,54 @@ API Яндекс
 
         Требуется? false
         Позиция? 7
-        Значение по умолчанию
+        Значение по умолчанию { [bool]$_.action.status.error }
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `ResultFilter <ScriptBlock>`
         фильтр обработки результата. Если фильтр не задан - функция не возвращает результат
 
         Требуется? false
         Позиция? 8
-        Значение по умолчанию
+        Значение по умолчанию {}
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `SuccessMsg <String>`
         Шаблон сообщения об успешном выполнении API
 
         Требуется? false
         Позиция? 9
-        Значение по умолчанию
+        Значение по умолчанию "Метод API $method успешно выполнен для домена $DomainName."
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `FailureMsg <String>`
         Шаблон сообщения об ошибке вызова API
 
         Требуется? false
         Позиция? 10
-        Значение по умолчанию
+        Значение по умолчанию "Ошибка при вызове метода API $method для домена $DomainName"
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `FailureMsgFilter <ScriptBlock>`
         Фильтр обработки результата для выделения сообщения об ошибке
 
         Требуется? false
         Позиция? 11
-        Значение по умолчанию
+        Значение по умолчанию { $_.action.status.error.'#text' }
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `UnknownErrorMsg <String>`
         Шаблон сообщения о недиагностируемой ошибке вызова API
 
         Требуется? false
         Позиция? 12
-        Значение по умолчанию
+        Значение по умолчанию "Неизвестная ошибка при вызове метода API $method для домена $DomainName."
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `WhatIf [<SwitchParameter>]`
 
@@ -443,7 +435,7 @@ API Яндекс
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Confirm [<SwitchParameter>]`
 
@@ -451,13 +443,13 @@ API Яндекс
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `<CommonParameters>`
-        Данный командлет поддерживает общие параметры: Verbose, Debug,
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer и OutVariable. Для получения дополнительных сведений введите
-        "get-help [about_CommonParameters][]".
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 
@@ -468,7 +460,7 @@ API Яндекс
 
 ##### Синтаксис
 
-	Register-Domain [-DomainName] <String> [-Token] <String> [-WhatIf] [-Confirm] <CommonParameters>
+	Register-Domain [-DomainName] <String> [-Token] <SecureString> [-WhatIf] [-Confirm] <CommonParameters>
 
 ##### Компонент
 
@@ -483,16 +475,16 @@ API Яндекс.Почты для доменов
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
-- `Token <String>`
+- `Token <SecureString>`
         авторизационный токен, полученный через [Get-Token][], для другого, уже зарегистрированного домена
 
         Требуется? true
         Позиция? 2
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `WhatIf [<SwitchParameter>]`
 
@@ -500,7 +492,7 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Confirm [<SwitchParameter>]`
 
@@ -508,13 +500,13 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `<CommonParameters>`
-        Данный командлет поддерживает общие параметры: Verbose, Debug,
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer и OutVariable. Для получения дополнительных сведений введите
-        "get-help [about_CommonParameters][]".
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 
@@ -524,7 +516,7 @@ API Яндекс.Почты для доменов
 
 		$token = Get-Token -DomainName 'maindomain.ru';	'domain1.ru', 'domain2.ru' | Register-Domain -Token $token;
 
-##### Связанные ссылки
+##### См. также
 
 - [reg_domain][]
 
@@ -552,16 +544,16 @@ API Яндекс.Почты для доменов
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `PassThru [<SwitchParameter>]`
         передавать домены далее по конвейеру или нет
 
         Требуется? false
         Позиция? named
-        Значение по умолчанию
+        Значение по умолчанию False
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `WhatIf [<SwitchParameter>]`
 
@@ -569,7 +561,7 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Confirm [<SwitchParameter>]`
 
@@ -577,13 +569,13 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `<CommonParameters>`
-        Данный командлет поддерживает общие параметры: Verbose, Debug,
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer и OutVariable. Для получения дополнительных сведений введите
-        "get-help [about_CommonParameters][]".
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 
@@ -593,7 +585,7 @@ API Яндекс.Почты для доменов
 
 		Remove-Domain -DomainName 'test.ru';
 
-##### Связанные ссылки
+##### См. также
 
 - [del_domain][]
 
@@ -618,16 +610,16 @@ API Яндекс.Почты для доменов
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `PassThru [<SwitchParameter>]`
         передавать домены далее по конвейеру или нет
 
         Требуется? false
         Позиция? named
-        Значение по умолчанию
+        Значение по умолчанию False
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `WhatIf [<SwitchParameter>]`
 
@@ -635,7 +627,7 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Confirm [<SwitchParameter>]`
 
@@ -643,13 +635,13 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `<CommonParameters>`
-        Данный командлет поддерживает общие параметры: Verbose, Debug,
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer и OutVariable. Для получения дополнительных сведений введите
-        "get-help [about_CommonParameters][]".
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 
@@ -663,7 +655,7 @@ API Яндекс.Почты для доменов
 
 		'domain1.ru', 'domain2.ru' | Remove-Logo;
 
-##### Связанные ссылки
+##### См. также
 
 - [del_logo][]
 
@@ -690,7 +682,7 @@ API Яндекс.Почты для доменов
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Path <FileInfo>`
         путь к файлу логотипа.
@@ -700,16 +692,16 @@ API Яндекс.Почты для доменов
         Позиция? 2
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByPropertyName)
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `PassThru [<SwitchParameter>]`
         передавать домены далее по конвейеру или нет
 
         Требуется? false
         Позиция? named
-        Значение по умолчанию
+        Значение по умолчанию False
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `WhatIf [<SwitchParameter>]`
 
@@ -717,7 +709,7 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `Confirm [<SwitchParameter>]`
 
@@ -725,13 +717,13 @@ API Яндекс.Почты для доменов
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `<CommonParameters>`
-        Данный командлет поддерживает общие параметры: Verbose, Debug,
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer и OutVariable. Для получения дополнительных сведений введите
-        "get-help [about_CommonParameters][]".
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 
@@ -741,7 +733,7 @@ API Яндекс.Почты для доменов
 
 		Set-Logo -DomainName 'yourdomain.ru' -Path 'c:\work\logo.png';
 
-##### Связанные ссылки
+##### См. также
 
 - [add_logo][]
 
@@ -764,7 +756,7 @@ API Яндекс
 
 ##### Передаваемые по конвейеру данные
 
-[System.String] - собственно token
+- [System.Security.SecureString] - собственно token
 
 ##### Параметры
 
@@ -775,22 +767,22 @@ API Яндекс
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue)
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `NoCache [<SwitchParameter>]`
         данный флаг указывает на необходимость принудительного запроса токена, минуя кеш
 
         Требуется? false
         Позиция? named
-        Значение по умолчанию
+        Значение по умолчанию False
         Принимать входные данные конвейера?false
-        Принимать подстановочные знаки?
+        Принимать подстановочные знаки?false
 
 - `<CommonParameters>`
-        Данный командлет поддерживает общие параметры: Verbose, Debug,
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer и OutVariable. Для получения дополнительных сведений введите
-        "get-help [about_CommonParameters][]".
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 
@@ -800,12 +792,59 @@ API Яндекс
 
 		$token = Get-Token -DomainName 'yourdomain.ru';
 
-##### Связанные ссылки
+##### См. также
 
 - [get_token][]
 
+#### Set-Token
 
-[about_CommonParameters]: http://go.microsoft.com/fwlink/?LinkID=113216 "Описание параметров, которые могут использоваться с любым командлетом."
+Данный метод позволяет задать токен, полученный ранее через [Get-Token][], для последующих
+вызовов командлет данного модуля.
+
+##### Синтаксис
+
+	Set-Token [-DomainName] <String> [-Token] <SecureString> <CommonParameters>
+
+##### Компонент
+
+API Яндекс
+
+##### Параметры
+
+- `DomainName <String>`
+        имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
+
+        Требуется? true
+        Позиция? 1
+        Значение по умолчанию
+        Принимать входные данные конвейера?true (ByPropertyName)
+        Принимать подстановочные знаки?false
+
+- `Token <SecureString>`
+        авторизационный токен, полученный через [Get-Token][]
+
+        Требуется? true
+        Позиция? 2
+        Значение по умолчанию
+        Принимать входные данные конвейера?true (ByPropertyName)
+        Принимать подстановочные знаки?false
+
+- `<CommonParameters>`
+        Этот командлет поддерживает общие параметры: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+
+
+
+##### Примеры использования
+
+1. Задание токена для домена yourdomain.ru.
+
+		Set-Token -DomainName 'yourdomain.ru' -Token $SecureStringToken;
+
+
+[about_CommonParameters]: http://go.microsoft.com/fwlink/?LinkID=113216 "Describes the parameters that can be used with any cmdlet."
 [add_logo]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_logo.xml 
 [del_admin]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_admin.xml 
 [del_domain]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_domain.xml 
@@ -823,6 +862,7 @@ API Яндекс
 [Remove-Logo]: <ITG.Yandex#Remove-Logo> "Метод (обёртка над Яндекс.API del_logo) предназначен для удаления логотипа домена."
 [set_admin]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_admin.xml 
 [Set-Logo]: <ITG.Yandex#Set-Logo> "Метод (обёртка над Яндекс.API add_logo) предназначен для установки логотипа для домена."
+[Set-Token]: <ITG.Yandex#Set-Token> "Установка токена для других методов API."
 
 ---------------------------------------
 
