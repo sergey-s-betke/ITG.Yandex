@@ -456,6 +456,7 @@ function Register-Domain {
 			ValueFromPipelineByPropertyName=$true
 		)]
 		[string]
+        [ValidateNotNullOrEmpty()]
 		[ValidateScript( { $_ -match "^$($reDomain)$" } )]
 		[Alias("domain_name")]
 		[Alias("Domain")]
@@ -570,7 +571,7 @@ function Set-Logo {
 	param (
 		# имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false,
+			Mandatory=$true,
 			ValueFromPipeline=$true,
 			ValueFromPipelineByPropertyName=$true
 		)]
@@ -641,7 +642,7 @@ function Remove-Logo {
 	param (
 		# имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false,
+			Mandatory=$true,
 			ValueFromPipeline=$true,
 			ValueFromPipelineByPropertyName=$true
 		)]
@@ -696,7 +697,7 @@ function Register-Admin {
 	param (
 		# имя домена, зарегистрированного на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false
+			Mandatory=$true
 			, ValueFromPipeline=$true
 			, ValueFromPipelineByPropertyName=$true
 		)]
@@ -769,7 +770,7 @@ function Remove-Admin {
 	param (
 		# имя домена, зарегистрированного на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false
+			Mandatory=$true
 			, ValueFromPipeline=$true
 			, ValueFromPipelineByPropertyName=$true
 		)]
@@ -839,7 +840,7 @@ function Get-Admin {
 	param (
 		# имя домена, зарегистрированного на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false,
+			Mandatory=$true,
 			ValueFromPipeline=$true,
 			ValueFromPipelineByPropertyName=$true
 		)]
