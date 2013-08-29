@@ -128,29 +128,7 @@ function Get-Token {
                 $CLSIDKey = $CRKey.CreateSubKey('CLSID\{D5E8041D-920F-45E9-B8FB-B1DEB82C6E5E}\LocalServer32');
                 $CLSIDKey.SetValue('', '"%ProgramFiles%\Internet Explorer\iexplore.exe" -startmediumtab -extoff');
                 $CLSIDKey.Close();
-<#
-                [GUID[]] $DisabledActiveX = 
-                    '{2933BF90-7B36-11D2-B20E-00C04F983E60}' `
-                ,   '{2933BF91-7B36-11D2-B20E-00C04F983E60}' `
-                ,   '{88d96a05-f192-11d4-a65f-0040963251e5}' `
-                ,   '{88d96a06-f192-11d4-a65f-0040963251e5}' `
-                ,   '{F5078F32-C551-11D3-89B9-0000F81FE221}' `
-                ,   '{F5078F33-C551-11D3-89B9-0000F81FE221}' `
-                ,   '{F6D90F11-9C73-11D3-B32E-00C04F990BB4}' `
-                ,   '{F6D90F12-9C73-11D3-B32E-00C04F990BB4}' `
-                ,   '{F6D90F14-9C73-11D3-B32E-00C04F990BB4}' `
-                ,   '{F5078F39-C551-11D3-89B9-0000F81FE221}' `
-                ,   '{2933BF94-7B36-11D2-B20E-00C04F983E60}' `
-                ,   '{F5078F36-C551-11D3-89B9-0000F81FE221}' `
-                ,   '{88D96A08-F192-11D4-A65F-0040963251E5}' `
-                ;
-                $ActiveXSettingsKey = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\Microsoft\Windows\CurrentVersion\Ext\Settings', $true);
-                foreach ($ActiveX in $DisabledActiveX) {
-                    $ActiveXKey = $ActiveXSettingsKey.CreateSubKey($ActiveX.ToString('B'));
-                    $ActiveXKey.SetValue('Flags', 1);
-                    $ActiveXKey.Close();
-                };
-#>
+
                 try {
 				    $ie = New-Object -Comobject 'InternetExplorer.Application.Medium';
                 } finally {
@@ -162,15 +140,6 @@ function Get-Token {
                     } finally {
                         $CRKey.Close();
                     };
-<#
-                    try {
-                        foreach ($ActiveX in $DisabledActiveX) {
-                            $ActiveXSettingsKey.DeleteSubKeyTree($ActiveX.ToString('B'));
-                        };
-                    } finally {
-                        $ActiveXSettingsKey.Close();
-                    };
-#>
                 };
 
 				Write-Verbose "Отправляем InternetExplorer на Яндекс.Паспорт ($get_tokenAuthURI).";
