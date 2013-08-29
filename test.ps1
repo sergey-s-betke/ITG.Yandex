@@ -36,11 +36,13 @@ $SecureToken = ConvertTo-SecureString -String (`
     'e5904256d5f7f305212714000000aa50cbd989d1423053c51a2062c07cbdb3720c2a'
 );
 
-Set-Token `
-    -DomainName 'csm.nov.ru' `
-    -Token $SecureToken `
-;
+$PSDefaultParameterValues.Add('*:DomainName','csm.nov.ru');
 
+Set-Token -Token $SecureToken;
+
+Get-Admin;
+
+<#
 Set-Logo `
     -DomainName 'csm.nov.ru' `
     -Path (Join-Path `
@@ -49,3 +51,4 @@ Set-Logo `
     ) `
     -Verbose `
 ;
+#>
