@@ -11,10 +11,10 @@
 @{
 
 # Файл модуля скрипта или двоичного модуля, связанный с данным манифестом
-ModuleToProcess = 'ITG.Yandex.psm1'
+RootModule = 'ITG.Yandex.psm1'
 
 # Номер версии данного модуля.
-ModuleVersion = '2.0.0'
+ModuleVersion = '2.0.1'
 
 # Уникальный идентификатор данного модуля
 GUID = '826e836c-d10c-4d4d-b86b-8b4a41829b99'
@@ -51,15 +51,17 @@ ProcessorArchitecture = ''
 
 # Модули, которые необходимо импортировать в глобальную среду перед импортированием данного модуля
 RequiredModules = @(
+    @{ModuleName = 'ITG.WinAPI.User32'; ModuleVersion = '2.0'} `
+,   @{ModuleName = 'ITG.WinAPI.UrlMon'; ModuleVersion = '2.0'} `
+,   @{ModuleName = 'ITG.RegExps'; ModuleVersion = '1.1'} `
+,   @{ModuleName = 'ITG.Utils'; ModuleVersion = '2.0'} `
 )
 
 # Сборки, которые должны быть загружены перед импортированием данного модуля
 RequiredAssemblies = @()
 
 # Файлы скрипта (.ps1), которые запускаются в среде вызывающей стороны перед импортированием данного модуля
-ScriptsToProcess = @(
-	'ITG.PrepareModulesEnv.ps1'
-)
+ScriptsToProcess = @()
 
 # Файлы типа (.ps1xml), которые загружаются при импорте данного модуля
 TypesToProcess = @()
@@ -87,8 +89,9 @@ ModuleList = @()
 
 # Список всех файлов, входящих в пакет данного модуля
 FileList = `
-	'ITG.Yandex.psm1',
-	'ITG.PrepareModulesEnv.ps1'
+	'ITG.Yandex.psm1' `
+,   'ITG.Yandex.psd1' `
+,   'readme.md'
 
 # Личные данные, передаваемые в модуль, указанный в параметре ModuleToProcess
 PrivateData = ''

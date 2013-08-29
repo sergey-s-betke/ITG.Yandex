@@ -1,10 +1,4 @@
-﻿'ITG.WinAPI.User32' `
-, 'ITG.WinAPI.UrlMon' `
-, 'ITG.RegExps' `
-, 'ITG.Utils' `
-| Import-Module;
-
-Set-Variable `
+﻿Set-Variable `
 	-Name 'APIRoot' `
 	-Option 'Constant' `
 	-Value 'https://pddimp.yandex.ru' `
