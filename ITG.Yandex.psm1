@@ -105,7 +105,7 @@ function Get-Token {
 			if ( $TokenForDomain.ContainsKey( $DomainName ) ) {
 				return $TokenForDomain.$DomainName;
 			} else {
-                [String]$Token = Get-Token -DomainName $DomainName -NoCache -ErrorAction Stop;
+                [System.Security.SecureString]$Token = Get-Token -DomainName $DomainName -NoCache -ErrorAction Stop;
                 Set-Token -DomainName $DomainName -Token $Token;
 				return $Token;
 			};
@@ -116,14 +116,32 @@ function Get-Token {
 
 			try {
 				Write-Verbose 'Создаём экземпляр InternetExplorer.';
+                $CRKey = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\Classes', $true);
                 if ( -not ( $ExistsIEProgId = Test-Path 'Registry::HKEY_CLASSES_ROOT\InternetExplorer.Application.Medium' )  ) {
-                    $null = New-Item -Path 'HKCU:\Software\Classes' -Name 'InternetExplorer.Application.Medium' -Value 'Internet Explorer';
-                    $null = New-Item -Path 'HKCU:\Software\Classes\InternetExplorer.Application.Medium' -Name 'CLSID' -Value '{D5E8041D-920F-45e9-B8FB-B1DEB82C6E5E}';
+                    $ProgIdKey = $CRKey.CreateSubKey('InternetExplorer.Application.Medium');
+                    $ProgIdKey.SetValue('', 'Internet Explorer');
+                    $ProgIdCLSIDKey = $ProgIdKey.CreateSubKey('CLSID');
+                    $ProgIdKey.Close();
+                    $ProgIdCLSIDKey.SetValue('', '{D5E8041D-920F-45E9-B8FB-B1DEB82C6E5E}');
+                    $ProgIdCLSIDKey.Close();
                 };
-				$ie = New-Object -Comobject 'InternetExplorer.Application.Medium';
-                if ( -not $ExistsIEProgId ) {
-                    Remove-Item -Path 'HKCU:\Software\Classes\InternetExplorer.Application.Medium' -Recurse -Force;
+                $CLSIDKey = $CRKey.CreateSubKey('CLSID\{D5E8041D-920F-45E9-B8FB-B1DEB82C6E5E}\LocalServer32');
+                $CLSIDKey.SetValue('', '"%ProgramFiles%\Internet Explorer\iexplore.exe" -startmediumtab -extoff');
+                $CLSIDKey.Close();
+
+                try {
+				    $ie = New-Object -Comobject 'InternetExplorer.Application.Medium';
+                } finally {
+                    try {
+                        $CRKey.DeleteSubKeyTree('CLSID\{D5E8041D-920F-45E9-B8FB-B1DEB82C6E5E}');
+                        if ( -not $ExistsIEProgId ) {
+                            $CRKey.DeleteSubKeyTree('InternetExplorer.Application.Medium');
+                        };
+                    } finally {
+                        $CRKey.Close();
+                    };
                 };
+
 				Write-Verbose "Отправляем InternetExplorer на Яндекс.Паспорт ($get_tokenAuthURI).";
 				$ie.Navigate( $get_tokenAuthURI );
 				$ie.Visible = $True;
@@ -141,10 +159,13 @@ function Get-Token {
 				) { Sleep -milliseconds 100; };
 				$ie.Visible = $False;
 
-				$res = ( [xml]$ie.document.documentElement.innerhtml );
-				Write-Debug "Ответ API get_token: $($ie.document.documentElement.innerhtml).";
-				if ( $res.ok ) {
-					$token = [System.String]$res.ok.token;
+				$res = $ie.document.documentElement.innerhtml;
+				Write-Debug "Ответ API get_token: $res.";
+                $reTag = [System.Text.RegularExpressions.Regex] '(?:(?:[<]/\w+[>])|(?:[<]\w+[^>]*[>]))';
+                $reToken = [System.Text.RegularExpressions.Regex] "(?:token$reTag*=`"$reTag*(?<token>[\da-fA-F]{56})$reTag*`")";
+
+				if ( $res -match $reToken ) {
+					$token = $Matches['token'];
 					Write-Verbose "Получили токен для домена $($DomainName)";
 					Write-Debug $token;
                     [SecureString] $SecureToken = ConvertTo-SecureString `
@@ -154,7 +175,10 @@ function Get-Token {
                     ;
 					return $SecureToken;
 				} else {
-					$errMsg = $res.error.reason;
+                    $reError = [System.Text.RegularExpressions.Regex] "(?:reason$reTag*=`"$reTag*(?<reason>.+?)$reTag*`")";
+				    if ( $res -match $reError ) {
+					    $errMsg = $Matches['reason'];
+                    };
 					Write-Error `
 						-Message "Ответ API get_token для домена $DomainName отрицательный." `
 						-Category PermissionDenied `
@@ -432,6 +456,7 @@ function Register-Domain {
 			ValueFromPipelineByPropertyName=$true
 		)]
 		[string]
+        [ValidateNotNullOrEmpty()]
 		[ValidateScript( { $_ -match "^$($reDomain)$" } )]
 		[Alias("domain_name")]
 		[Alias("Domain")]
@@ -546,7 +571,7 @@ function Set-Logo {
 	param (
 		# имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false,
+			Mandatory=$true,
 			ValueFromPipeline=$true,
 			ValueFromPipelineByPropertyName=$true
 		)]
@@ -617,7 +642,7 @@ function Remove-Logo {
 	param (
 		# имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false,
+			Mandatory=$true,
 			ValueFromPipeline=$true,
 			ValueFromPipelineByPropertyName=$true
 		)]
@@ -672,7 +697,7 @@ function Register-Admin {
 	param (
 		# имя домена, зарегистрированного на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false
+			Mandatory=$true
 			, ValueFromPipeline=$true
 			, ValueFromPipelineByPropertyName=$true
 		)]
@@ -745,7 +770,7 @@ function Remove-Admin {
 	param (
 		# имя домена, зарегистрированного на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false
+			Mandatory=$true
 			, ValueFromPipeline=$true
 			, ValueFromPipelineByPropertyName=$true
 		)]
@@ -815,7 +840,7 @@ function Get-Admin {
 	param (
 		# имя домена, зарегистрированного на сервисах Яндекса
 		[Parameter(
-			Mandatory=$false,
+			Mandatory=$true,
 			ValueFromPipeline=$true,
 			ValueFromPipelineByPropertyName=$true
 		)]

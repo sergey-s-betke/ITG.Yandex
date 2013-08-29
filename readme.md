@@ -15,7 +15,7 @@
 Метод (обёртка над Яндекс.API [get_admins][]). Метод позволяет получить список
 дополнительных администраторов домена.
 
-	Get-Admin [[-DomainName] <String>] <CommonParameters>
+	Get-Admin [-DomainName] <String> <CommonParameters>
 
 Подробнее - [Get-Admin][].
 
@@ -24,7 +24,7 @@
 Метод (обёртка над Яндекс.API [set_admin][]) предназначен для указания логина
 дополнительного администратора домена.
 
-	Register-Admin [-DomainName <String>] [-Credential] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Register-Admin -DomainName <String> [-Credential] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 Подробнее - [Register-Admin][].
 
@@ -33,7 +33,7 @@
 Метод (обёртка над Яндекс.API [del_admin][]) предназначен для удаления
 дополнительного администратора домена.
 
-	Remove-Admin [-DomainName <String>] [-Credential] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Remove-Admin -DomainName <String> [-Credential] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 Подробнее - [Remove-Admin][].
 
@@ -71,7 +71,7 @@
 
 Метод (обёртка над Яндекс.API [del_logo][]) предназначен для удаления логотипа домена.
 
-	Remove-Logo [[-DomainName] <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Remove-Logo [-DomainName] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 Подробнее - [Remove-Logo][].
 
@@ -79,7 +79,7 @@
 
 Метод (обёртка над Яндекс.API [add_logo][]) предназначен для установки логотипа для домена.
 
-	Set-Logo [[-DomainName] <String>] [-Path] <FileInfo> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Set-Logo [-DomainName] <String> [-Path] <FileInfo> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 Подробнее - [Set-Logo][].
 
@@ -111,7 +111,7 @@
 
 ##### Синтаксис
 
-	Get-Admin [[-DomainName] <String>] <CommonParameters>
+	Get-Admin [-DomainName] <String> <CommonParameters>
 
 ##### Компонент
 
@@ -122,7 +122,7 @@ API Яндекс.Почты для доменов
 - `DomainName <String>`
         имя домена, зарегистрированного на сервисах Яндекса
 
-        Требуется? false
+        Требуется? true
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
@@ -155,7 +155,7 @@ API Яндекс.Почты для доменов
 
 ##### Синтаксис
 
-	Register-Admin [-DomainName <String>] [-Credential] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Register-Admin -DomainName <String> [-Credential] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 ##### Компонент
 
@@ -166,7 +166,7 @@ API Яндекс.Почты для доменов
 - `DomainName <String>`
         имя домена, зарегистрированного на сервисах Яндекса
 
-        Требуется? false
+        Требуется? true
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
@@ -233,7 +233,7 @@ API Яндекс.Почты для доменов
 
 ##### Синтаксис
 
-	Remove-Admin [-DomainName <String>] [-Credential] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Remove-Admin -DomainName <String> [-Credential] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 ##### Компонент
 
@@ -244,7 +244,7 @@ API Яндекс.Почты для доменов
 - `DomainName <String>`
         имя домена, зарегистрированного на сервисах Яндекса
 
-        Требуется? false
+        Требуется? true
         Позиция? named
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
@@ -375,8 +375,7 @@ API Яндекс
         Принимать подстановочные знаки?false
 
 - `IsFailurePredicate <ScriptBlock>`
-        предикат ошибки при выполнении метода API. Если ни один из предикатов не вернёт $true - генерируем неизвестную оши
-        бку
+        предикат ошибки при выполнении метода API. Если ни один из предикатов не вернёт $true - генерируем неизвестную ошибку
 
         Требуется? false
         Позиция? 7
@@ -595,7 +594,7 @@ API Яндекс.Почты для доменов
 
 ##### Синтаксис
 
-	Remove-Logo [[-DomainName] <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Remove-Logo [-DomainName] <String> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 ##### Компонент
 
@@ -606,7 +605,7 @@ API Яндекс.Почты для доменов
 - `DomainName <String>`
         имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
 
-        Требуется? false
+        Требуется? true
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
@@ -667,7 +666,7 @@ API Яндекс.Почты для доменов
 
 ##### Синтаксис
 
-	Set-Logo [[-DomainName] <String>] [-Path] <FileInfo> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Set-Logo [-DomainName] <String> [-Path] <FileInfo> [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 ##### Компонент
 
@@ -678,7 +677,7 @@ API Яндекс.Почты для доменов
 - `DomainName <String>`
         имя домена - любой из доменов, зарегистрированных под Вашей учётной записью на сервисах Яндекса
 
-        Требуется? false
+        Требуется? true
         Позиция? 1
         Значение по умолчанию
         Принимать входные данные конвейера?true (ByValue, ByPropertyName)
