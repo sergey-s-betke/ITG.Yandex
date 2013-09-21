@@ -275,7 +275,7 @@ function Invoke-API {
 	if ( -not $Token ) {
 		$Token = Get-Token $DomainName;
 	};
-    $BSTRToken = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR( $SecureToken );
+    $BSTRToken = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR( $Token );
     try {
         $PlainTextToken = [System.Runtime.InteropServices.marshal]::PtrToStringAuto( $BSTRToken );
     } finally {
