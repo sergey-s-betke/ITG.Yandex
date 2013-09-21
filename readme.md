@@ -132,7 +132,7 @@ API Яндекс.Почты для доменов
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -210,7 +210,7 @@ API Яндекс.Почты для доменов
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -288,7 +288,7 @@ API Яндекс.Почты для доменов
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -375,8 +375,7 @@ API Яндекс
         Принимать подстановочные знаки?false
 
 - `IsFailurePredicate <ScriptBlock>`
-        предикат ошибки при выполнении метода API. Если ни один из предикатов не вернёт $true - генерируем неизвестную оши
-        бку
+        предикат ошибки при выполнении метода API. Если ни один из предикатов не вернёт $true - генерируем неизвестную ошибку
 
         Требуется? false
         Позиция? 7
@@ -449,7 +448,7 @@ API Яндекс
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -506,7 +505,7 @@ API Яндекс.Почты для доменов
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -575,7 +574,7 @@ API Яндекс.Почты для доменов
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -641,7 +640,7 @@ API Яндекс.Почты для доменов
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -723,7 +722,7 @@ API Яндекс.Почты для доменов
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -782,7 +781,7 @@ API Яндекс
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -833,7 +832,7 @@ API Яндекс
         Этот командлет поддерживает общие параметры: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-        [about_CommonParameters][] (http://go.microsoft.com/fwlink/?LinkID=113216).
+        [about_CommonParameters][].
 
 
 
@@ -851,18 +850,18 @@ API Яндекс
 [del_logo]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_del_logo.xml#domain-control_del_logo 
 [get_admins]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_get_admins.xml 
 [get_token]: http://api.yandex.ru/pdd/doc/api-pdd/reference/get-token.xml#get-token 
-[Get-Admin]: <ITG.Yandex#Get-Admin> "Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список дополнительных администраторов домена."
-[Get-Token]: <ITG.Yandex#Get-Token> "Метод (обёртка над Яндекс.API get_token) предназначен для получения авторизационного токена."
-[Invoke-API]: <ITG.Yandex#Invoke-API> "Обёртка для вызовов методов API Яндекс. Предназначена для внутреннего использования."
+[Get-Admin]: <#get-admin> "Метод (обёртка над Яндекс.API get_admins). Метод позволяет получить список дополнительных администраторов домена."
+[Get-Token]: <#get-token> "Метод (обёртка над Яндекс.API get_token) предназначен для получения авторизационного токена."
+[Invoke-API]: <#invoke-api> "Обёртка для вызовов методов API Яндекс. Предназначена для внутреннего использования."
 [reg_domain]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_reg_domain.xml 
-[Register-Admin]: <ITG.Yandex#Register-Admin> "Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина дополнительного администратора домена."
-[Register-Domain]: <ITG.Yandex#Register-Domain> "Метод (обёртка над Яндекс.API reg_domain) предназначен для регистрации домена на сервисах Яндекса."
-[Remove-Admin]: <ITG.Yandex#Remove-Admin> "Метод (обёртка над Яндекс.API del_admin) предназначен для удаления дополнительного администратора домена."
-[Remove-Domain]: <ITG.Yandex#Remove-Domain> "Метод (обёртка над Яндекс.API del_domain) предназначен для отключения домена от Яндекс.Почта для доменов."
-[Remove-Logo]: <ITG.Yandex#Remove-Logo> "Метод (обёртка над Яндекс.API del_logo) предназначен для удаления логотипа домена."
+[Register-Admin]: <#register-admin> "Метод (обёртка над Яндекс.API set_admin) предназначен для указания логина дополнительного администратора домена."
+[Register-Domain]: <#register-domain> "Метод (обёртка над Яндекс.API reg_domain) предназначен для регистрации домена на сервисах Яндекса."
+[Remove-Admin]: <#remove-admin> "Метод (обёртка над Яндекс.API del_admin) предназначен для удаления дополнительного администратора домена."
+[Remove-Domain]: <#remove-domain> "Метод (обёртка над Яндекс.API del_domain) предназначен для отключения домена от Яндекс.Почта для доменов."
+[Remove-Logo]: <#remove-logo> "Метод (обёртка над Яндекс.API del_logo) предназначен для удаления логотипа домена."
 [set_admin]: http://api.yandex.ru/pdd/doc/api-pdd/reference/domain-control_add_admin.xml 
-[Set-Logo]: <ITG.Yandex#Set-Logo> "Метод (обёртка над Яндекс.API add_logo) предназначен для установки логотипа для домена."
-[Set-Token]: <ITG.Yandex#Set-Token> "Установка токена для других методов API."
+[Set-Logo]: <#set-logo> "Метод (обёртка над Яндекс.API add_logo) предназначен для установки логотипа для домена."
+[Set-Token]: <#set-token> "Установка токена для других методов API."
 
 ---------------------------------------
 

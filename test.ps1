@@ -17,13 +17,8 @@ Import-Module `
     -Name 'ITG.Yandex' `
 	-Force `
 ;
-$m = Get-Module -Name 'ITG.Yandex';
-$m | Set-Readme `
-    -Path ( `
-	    $m.ModuleBase `
-	    | Join-Path -ChildPath 'readme.md' `
-    ) `
-;
+
+Set-Readme -Module ( Get-Module 'ITG.Yandex' );
 
 Set-Token `
     -DomainName 'csm.nov.ru' `
